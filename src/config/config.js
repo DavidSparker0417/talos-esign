@@ -128,5 +128,6 @@ export const TARGET_NET = ChainNets.ether;
 
 // "backend": "https://esign-backend-v1.herokuapp.com/"
 // http://localhost:5000/
-const {backend} = JSON.parse(localStorage.getItem("config"));
+// const {backend} = JSON.parse(localStorage.getItem("config"));
+const backend = "https://esign-backend-v1.herokuapp.com/";
 export const API_BASE_URL = backend + "api/";
