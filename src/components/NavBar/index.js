@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useNavigate} from "react-router-dom";
 import MuiLink from "@mui/material/Link";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -7,9 +8,12 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
+import UserIcon from "@mui/icons-material/Person";
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../redux/auth';
 
 export function Logo({ image, link }) {
   return (
@@ -21,7 +25,9 @@ export function Logo({ image, link }) {
 
 const NavBar = ({logo, pages, components}) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-
+  const [profileMenu, setProfileMenu] = React.useState();
+  const navigate = useNavigate();
+  const dispath = useDispatch();
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -32,7 +38,7 @@ const NavBar = ({logo, pages, components}) => {
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
+        <Toolbar disableGutters sx={{justifyContent:"space-between"}}>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -72,8 +78,7 @@ const NavBar = ({logo, pages, components}) => {
                 </MenuItem>
             </Menu>
           </Box>
-          <Logo image={logo.image} link={logo.link}/>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          {pages && <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages?.map((page) => (
               <Button
                 key={page}
@@ -83,13 +88,38 @@ const NavBar = ({logo, pages, components}) => {
                 {page}
               </Button>
             ))}
-          </Box>
+          </Box>}
           {
             components?.map((c, i) => (
             <Box key={`nav-components-${i}`}>
               {c}
             </Box>))
           }
+          <IconButton
+            aria-haspopup="true"
+            color="white"
+            aria-controls="profile-menu"
+            onClick={e=>setProfileMenu(e.currentTarget)}
+          >
+            <UserIcon/>
+          </IconButton>
+          <Menu
+            id="profile-menu"
+            open={Boolean(profileMenu)}
+            anchorEl={profileMenu}
+            onClose={()=>setProfileMenu(null)}
+            disableAutoFocusItem
+          >
+            <MenuItem 
+              onClick={()=>{
+                  dispath(logout());
+                  navigate("/");
+                }
+              }
+            >
+              Logout
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </Container>
     </AppBar>

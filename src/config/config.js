@@ -1,3 +1,4 @@
+import { useGlobal } from "../context/global";
 
 export const ChainNets = {
   ether : {
@@ -124,3 +125,8 @@ export const ChainNets = {
 }
 
 export const TARGET_NET = ChainNets.ether;
+
+// "backend": "https://esign-backend-v1.herokuapp.com/"
+// http://localhost:5000/
+const {backend} = JSON.parse(localStorage.getItem("config"));
+export const API_BASE_URL = backend + "api/";

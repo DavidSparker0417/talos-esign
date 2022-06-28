@@ -1,43 +1,70 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { gstnGetStatistics } from "../contracts/nft";
-import { RefreshGeneral } from "../redux/nft";
-import { useWallet } from "./wallet";
-import { useDispatch } from "react-redux";
-
+import AuthService from "../service/auth.service";
 export const GlobalContext = createContext();
-export function GlobalProvider({ children }) {
-  const wallet = useWallet();
-  const dispatch = useDispatch();
-  const [gstn, setGstn] = useState();
+export function GlobalProvider({ children }) {  
+  const [config, setConfig] = useState();
 
-  // timer for refreshing nft info
+  function loadConfig() {
+    fetch("/config.json")
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (data) {
+        console.log("[DAVID] Config loaded. config = ", data);
+        localStorage.setItem("config", JSON.stringify(data));
+        setConfig(data);
+      })
+      .catch(function (err) {
+        console.log("[DAVID] Loading config failed! err = ", err);
+      });
+  }
+
   useEffect(() => {
     console.log("[DAVID] +++++++++++++ Initial Loading ++++++++++ ");
+    loadConfig();  
     const ac = new AbortController();
-
-    async function fetchNftInfo () {
-      const gstnInfo = await gstnGetStatistics(wallet.provider, wallet.account);
-      // console.log("[DAVID] gstnInfo = ", gstnInfo);
-      setGstn(gstnInfo);
-      dispatch(RefreshGeneral(gstnInfo));
+    const callCheckLoginState = async() => {
+      checkLoginState().then(() => {
+        if (ac.signal.aborted === false) {
+          setTimeout(() => callCheckLoginState(), 1000*60*5) // check every 5 minutes
+        }
+      })
     }
 
-    const callRefreshNftInfo = async () => {
-      fetchNftInfo().then(() => {
-        if (ac.signal.aborted === false) {
-          setTimeout(() => callRefreshNftInfo(), 1000 * 3); // check every 3 seconds
+    callCheckLoginState();
+    return () => ac.abort();
+  }, []);
+
+  // check login status
+  async function checkLoginState() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user)
+      return;
+
+    // check if current user is expired
+    AuthService.checkUserValid()
+      .then((response) => {
+        console.log("[DAVID] checkLoginState :: checkResult = ", response);
+      })
+      .catch(e => {
+        if (e.response) {
+          const eStatus = e.response.status;
+          if (eStatus === 401) {
+            console.log("[DAVID] checkLoginState :: checkFailed = ", e.response);
+            const errorOnServer = e.response.data.error;
+            if (errorOnServer && errorOnServer.name === "TokenExpiredError") {
+              console.log("[DAVID] User expired! logging out... ");
+            }
+            AuthService.logout();
+            window.location.reload();
+          }
         }
       });
-    };
+  }
 
-    callRefreshNftInfo();
-    return () => ac.abort();
-  }, [dispatch, wallet]);
-  
   return (
-    <GlobalContext.Provider value={{}}>
+    <GlobalContext.Provider value={{config}}>
       {children}
-      {/* <div style={{display:"none"}}>{gstn?.maxSupply}</div> */}
     </GlobalContext.Provider>
   );
 }

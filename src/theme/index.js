@@ -1,6 +1,11 @@
 import { createTheme } from '@mui/material';
-import colors from "./colors";
+import pxToRem from "./functions/pxToRem"
+import colors from './base/colors';
+
 export default createTheme({
-  none: {},
+  functions: {
+    pxToRem
+  },
+  palette: {...colors}
   // palette: {...colors}
 })
