@@ -10,12 +10,14 @@ import FormControl from "@mui/material/FormControl";
 import DocsignService from "../../../../service/docsign.service";
 import { arrayBufferToBase64, b64toBytes } from "../../helper";
 import SignaturePad from 'react-signature-pad-wrapper';
+import { useUI } from "../../../../context/ui";
 
 export default function SignPadV2({pdfBuffer, page, update, close}) {
   const [type, setType] = useState(0);
   const [signText, setSignText] = useState();
-  const [drawnSig, setDrawnSig] = useState();
   const signRef = useRef();
+  const {setLoading} = useUI();
+
   function closeBtn() {
     if (close) close();
   }
@@ -86,6 +88,7 @@ export default function SignPadV2({pdfBuffer, page, update, close}) {
 
     let signedResp;
     try {
+      setLoading(true, "Signing ...");
       signedResp = await DocsignService.signDoc(
         arrayBufferToBase64(pdfBuffer),
         {
@@ -95,7 +98,10 @@ export default function SignPadV2({pdfBuffer, page, update, close}) {
       );
     } catch (e) {
       toast.error(e.message);
+      setLoading(false);
     }
+
+    setLoading(false);
 
     if (update) 
       update(pdfBytes);
