@@ -186,7 +186,7 @@ export default function SignPadV2({pdfBuffer, page, update, close}) {
             />
           ) : (
             <textarea
-              style={{
+              style={{ 
                 width: "100%",
                 height: "100%",
                 resize: "none",
