@@ -25,7 +25,6 @@ export function b64toBytes(b64Data) {
   for (let i = 0; i < byteCharacters.length; i++) {
     uint8Array[i] = byteCharacters.charCodeAt(i);
   }
-  console.log("[DAVID] b64toBytes :: RESULT = ", uint8Array);
   return uint8Array;
 }
 

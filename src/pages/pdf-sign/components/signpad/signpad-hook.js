@@ -2,7 +2,7 @@ import React, { Component, useRef, useState } from "react";
 import { toast } from "react-toastify";
 // import SignaturePad from "signature_pad";
 import { Button, Grid } from "@mui/material";
-import { degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { degrees, drawImage, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
@@ -12,7 +12,7 @@ import { arrayBufferToBase64, b64toBytes } from "../../helper";
 import SignaturePad from 'react-signature-pad-wrapper';
 import { useUI } from "../../../../context/ui";
 
-export default function SignPadV2({pdfBuffer, page, update, close}) {
+export default function SignPadV2({pdfBuffer, page, signer, update, close}) {
   const [type, setType] = useState(0);
   const [signText, setSignText] = useState();
   const signRef = useRef();
@@ -40,19 +40,20 @@ export default function SignPadV2({pdfBuffer, page, update, close}) {
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const pages = pdfDoc.getPages();
     const curPageNum = page - 1;
-    const curPage = pages[curPageNum];
+    const curPage = pages[0];
     let drawInfo = {
       type: type === 0 ? "draw" : "text",
-      x: 0,
-      y: 0,
+      x: parseInt(signer.tabs.signHereTabs[0].anchorXOffset),
+      y: parseInt(signer.tabs.signHereTabs[0].anchorYOffset),
       width: 0,
       height: 0,
       data: 0
     };
+
     if (type === 1) { // text
       drawInfo.type = "text";
-      drawInfo.x = 5;
-      drawInfo.y = curPage.getHeight() / 2;
+      // drawInfo.x = 5;
+      // drawInfo.y = curPage.getHeight() / 2;
       drawInfo.data = signText;
       curPage.drawText(signText, {
         x: drawInfo.x,
@@ -66,24 +67,26 @@ export default function SignPadV2({pdfBuffer, page, update, close}) {
       const drawnSigUrl = signRef.current.signaturePad.toDataURL();
       const pngImageBytes = await fetch(drawnSigUrl).then(res => res.arrayBuffer());
       const pngImage = await pdfDoc.embedPng(pngImageBytes);
-      const pngDims = pngImage.scale(1.0);
+      const pngDims = pngImage.scale(0.2);
       drawInfo.type = "draw";
-      drawInfo.x = curPage.getWidth() / 2 - pngDims.width / 2;
-      drawInfo.y = curPage.getHeight() / 2 - pngDims.height;
+      // drawInfo.x = curPage.getWidth() / 2 - pngDims.width / 2;
+      // drawInfo.y = curPage.getHeight() / 2 - pngDims.height;
       drawInfo.imgWidth = pngDims.width;
       drawInfo.imgHeight = pngDims.height;
+      drawInfo.y = curPage.getHeight() - drawInfo.imgHeight - parseInt(signer.tabs.signHereTabs[0].anchorYOffset);
       const pngImageB64 = await fetch(drawnSigUrl).then((res) => {
         return res.url.split("base64,")[1];
       });
       drawInfo.data = pngImageB64;
       curPage.drawImage(pngImage, {
         x: drawInfo.x,
-        x: drawInfo.y,
+        y: drawInfo.y,
         width: drawInfo.imgWidth,
         height: drawInfo.imgHeight,
       });
     }
 
+    console.log("++++++++++ drawInfo = ", drawInfo);
     let pdfBytes = await pdfDoc.save();
 
     let signedResp;

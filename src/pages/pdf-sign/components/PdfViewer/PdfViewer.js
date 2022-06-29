@@ -64,18 +64,23 @@ export default function PdfViewer({ pdf , curPage}) {
           file={pdf.url}
           onLoadSuccess={onDocumentLoadSuccess}
         >
-          <Page 
-            pageNumber={currentPage} 
-            scale={scale}
-            onLoadSuccess = {onLoadSuccess}
-          />
+          { 
+            Array(totalPages).fill(true).map((_, i) => 
+              <Page 
+                key={`page-${i}`}
+                pageNumber={i} 
+                scale={scale}
+                noData = {false}
+                onLoadSuccess = {i===1 ? onLoadSuccess : ()=>{}}
+              />
+          )}
         </Document>
       )}
-      <Grid container alignItems="center">
+      <Grid container alignItems="center" justifyContent="space-between">
         <Grid item xs={3} paddingLeft="16px" overflow="hidden">
           <Typography fontSize="14px">{pdf?.filename}</Typography>
         </Grid>
-        <Grid item xs={6} container justifyContent="center" alignItems="center">
+        {/* <Grid item xs={6} container justifyContent="center" alignItems="center">
           <Button 
             fontSize="14px"
             onClick={() => onHandlePageNumber(currentPage - 1)}>
@@ -87,7 +92,7 @@ export default function PdfViewer({ pdf , curPage}) {
             onClick={() => onHandlePageNumber(currentPage + 1)}>
             Next
           </Button>
-        </Grid>
+        </Grid> */}
         <Grid item xs={3} paddingRight="16px" justifyContent="end">
           <Typography fontSize="14px" style={{textAlign:"end"}}>Page 1-{totalPages} </Typography>
         </Grid>

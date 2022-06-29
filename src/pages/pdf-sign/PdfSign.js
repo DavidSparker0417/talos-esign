@@ -14,11 +14,15 @@ export default function PdfSign() {
   const [pdfBuffer, setPdfBuffer] = useState();
   const [togglePad, setTogglePad] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const originalPdfBuffer = b64toBytes(testPayload.documents[0].documentBase64);
+  const [signer, setSigner] = useState();
+  
+  const doc = testPayload.documents[0];
+  const originalPdfBuffer = b64toBytes(doc.documentBase64);
   useEffect(() => {
-    console.log("[DAVID] testPayload :: ", testPayload);
     setPdfBuffer(originalPdfBuffer);
-    setPdf((old) => ({ ...old, filename: trimFileName(testPayload.documents[0].name) }));
+    setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
+    console.log(testPayload.recipients.signers[0]);
+    setSigner(testPayload.recipients.signers[0]);
   }, []);
 
   useEffect(() => {
@@ -70,6 +74,7 @@ export default function PdfSign() {
             update={(buffer) => setPdfBuffer(buffer)}
             close={() => setTogglePad(false)}
             page={currentPage}
+            signer = {signer}
           />
         </div>
       ) : (
