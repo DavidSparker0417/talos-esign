@@ -73,7 +73,8 @@ export default function SignPadV2({pdfBuffer, page, signer, update, close}) {
       drawInfo.imgWidth = pngDims.width;
       drawInfo.imgHeight = pngDims.height;
       drawInfo.x = parseInt(signer.tabs.signHereTabs[0].anchorXOffset);
-      drawInfo.y = curPage.getHeight() - drawInfo.imgHeight - parseInt(signer.tabs.signHereTabs[0].anchorYOffset);
+      // drawInfo.y = curPage.getHeight() - drawInfo.imgHeight - parseInt(signer.tabs.signHereTabs[0].anchorYOffset);
+      drawInfo.y = parseInt(signer.tabs.signHereTabs[0].anchorYOffset);
       const pngImageB64 = await fetch(drawnSigUrl).then((res) => {
         return res.url.split("base64,")[1];
       });
@@ -86,7 +87,6 @@ export default function SignPadV2({pdfBuffer, page, signer, update, close}) {
       });
     }
 
-    console.log("++++++++++ drawInfo = ", drawInfo);
     let pdfBytes = await pdfDoc.save();
 
     let signedResp;
