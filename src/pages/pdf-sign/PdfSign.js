@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { Box, Button, Grid } from "@mui/material";
 
 // components
 import PdfViewer from "./components/PdfViewer/PdfViewer";
 import testPayload from "./payload.json";
-import { b64toBytes, trimFileName } from "./helper";
+import { b64toBytes, insertInitialsToPDF, trimFileName } from "./helper";
 
 import SignPad from "./components/signpad";
 import SignPadV2 from "./components/signpad/signpad-hook";
@@ -15,12 +16,39 @@ export default function PdfSign() {
   const [togglePad, setTogglePad] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [signer, setSigner] = useState();
-  
+
   const doc = testPayload.documents[0];
   const originalPdfBuffer = b64toBytes(doc.documentBase64);
   useEffect(() => {
-    setPdfBuffer(originalPdfBuffer);
-    setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
+    // async function insertInitials(pdfBuffer, payload) {
+    //   const signers = payload?.recipients?.signers;
+    //   const initialTab = signers?.tabs?.initialHereTabs[0];
+    //   if (!initialTab)
+    //     return pdfBuffer;
+
+    //   const pdfDoc = await PDFDocument.load(pdfBuffer);
+    //   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    //   const pages = pdfDoc.getPages();
+    //   const curPage = pages[0];
+
+    //   curPage.drawText(initialTab.anchorString, {
+    //     x: initialTab.anchorXOffset,
+    //     y: initialTab.anchorYOffset,
+    //     size: 10,
+    //     font: helveticaFont,
+    //     color: rgb(0.95, 0.1, 0.1),
+    //   });
+
+    //   let pdfBytes = await pdfDoc.save();
+    //   return pdfBytes;
+    // }
+
+
+    insertInitialsToPDF(originalPdfBuffer, testPayload).then((buffer) => {
+      setPdfBuffer(buffer);
+      setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
+      console.log("Initial inserted buffer = ", buffer);
+    });
     console.log(testPayload.recipients.signers[0]);
     setSigner(testPayload.recipients.signers[0]);
   }, []);
@@ -52,10 +80,7 @@ export default function PdfSign() {
         Start Signing Session
       </Button>
       <Grid container>
-        <PdfViewer 
-          pdf={pdf} 
-          curPage={(page) => setCurrentPage(page)} 
-        />
+        <PdfViewer pdf={pdf} curPage={(page) => setCurrentPage(page)} />
       </Grid>
       {togglePad ? (
         <div
@@ -74,7 +99,7 @@ export default function PdfSign() {
             update={(buffer) => setPdfBuffer(buffer)}
             close={() => setTogglePad(false)}
             page={currentPage}
-            signer = {signer}
+            signer={signer}
           />
         </div>
       ) : (

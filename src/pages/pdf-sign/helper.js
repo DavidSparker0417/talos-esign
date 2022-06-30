@@ -1,3 +1,5 @@
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+
 export default function b64toBlob(b64Data, contentType = "", sliceSize = 512) {
   const byteCharacters = atob(b64Data);
   const byteArrays = [];
@@ -63,4 +65,30 @@ export function getBinaryFromPublic(path) {
       console.log("[getBinaryFromPublic] error = ", err)
       return null;
     });
+}
+
+export async function insertInitialsToPDF(pdfBuffer, payload) {
+  const signers = payload?.recipients?.signers;
+  if (!signers)
+    return pdfBuffer;
+  
+  const pdfDoc = await PDFDocument.load(pdfBuffer);
+  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const pages = pdfDoc.getPages();
+  const curPage = pages[0];
+
+  signers.map((s, i) => {
+    const initialTab = s?.tabs?.initialHereTabs[0];
+    curPage.drawText(initialTab.anchorString, {
+      x: 120 + i*30, //parseFloat(initialTab.anchorXOffset),
+      y: 95, //parseFloat(initialTab.anchorYOffset), 
+      size: 10, 
+      font: helveticaFont, 
+      color: rgb(0.95, 0.1, 0.1),
+    });
+  })
+
+  let pdfBytes = await pdfDoc.save();
+  console.log("+++++++++ insertInitialsToPDF :: ", pdfBytes);
+  return pdfBytes;
 }

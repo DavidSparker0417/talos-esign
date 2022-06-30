@@ -61,7 +61,6 @@ export default function SignPadV2({pdfBuffer, page, signer, update, close}) {
         size: 50, 
         font: helveticaFont, 
         color: rgb(0.95, 0.1, 0.1),
-        rotate: degrees(-45)
       });
     } else {
       const drawnSigUrl = signRef.current.signaturePad.toDataURL();
@@ -73,6 +72,7 @@ export default function SignPadV2({pdfBuffer, page, signer, update, close}) {
       // drawInfo.y = curPage.getHeight() / 2 - pngDims.height;
       drawInfo.imgWidth = pngDims.width;
       drawInfo.imgHeight = pngDims.height;
+      drawInfo.x = parseInt(signer.tabs.signHereTabs[0].anchorXOffset);
       drawInfo.y = curPage.getHeight() - drawInfo.imgHeight - parseInt(signer.tabs.signHereTabs[0].anchorYOffset);
       const pngImageB64 = await fetch(drawnSigUrl).then((res) => {
         return res.url.split("base64,")[1];

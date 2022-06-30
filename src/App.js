@@ -3,6 +3,7 @@ import Main from "./pages/main";
 import Login from "./pages/auth/login";
 import PrivateRoute, { PublicRoute } from "./routes/route";
 import PdfSign from "./pages/pdf-sign/PdfSign";
+import Test from "./pages/test";
 
 function App() {
   return (<>
@@ -16,6 +17,7 @@ function App() {
         }
       >
         <Route path="doc-sign" element={<PdfSign/>}/>
+        <Route path="test" element={<Test/>}/>
       </Route>
 
       <Route
