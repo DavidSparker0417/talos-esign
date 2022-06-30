@@ -48,7 +48,7 @@ export default function Login() {
     dispatch(refresh());
   };
   return (
-    <Box width="70%" margin="auto" paddingTop="20%">
+    <Box width="90%" margin="auto" paddingTop="20%">
       <StyledTabs 
         value={tabIndex} 
         onChange={handleChange}

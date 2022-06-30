@@ -6,8 +6,6 @@ import { Box, Button, Grid } from "@mui/material";
 import PdfViewer from "./components/PdfViewer/PdfViewer";
 import testPayload from "./payload.json";
 import { b64toBytes, insertInitialsToPDF, trimFileName } from "./helper";
-
-import SignPad from "./components/signpad";
 import SignPadV2 from "./components/signpad/signpad-hook";
 
 export default function PdfSign() {
@@ -20,30 +18,6 @@ export default function PdfSign() {
   const doc = testPayload.documents[0];
   const originalPdfBuffer = b64toBytes(doc.documentBase64);
   useEffect(() => {
-    // async function insertInitials(pdfBuffer, payload) {
-    //   const signers = payload?.recipients?.signers;
-    //   const initialTab = signers?.tabs?.initialHereTabs[0];
-    //   if (!initialTab)
-    //     return pdfBuffer;
-
-    //   const pdfDoc = await PDFDocument.load(pdfBuffer);
-    //   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    //   const pages = pdfDoc.getPages();
-    //   const curPage = pages[0];
-
-    //   curPage.drawText(initialTab.anchorString, {
-    //     x: initialTab.anchorXOffset,
-    //     y: initialTab.anchorYOffset,
-    //     size: 10,
-    //     font: helveticaFont,
-    //     color: rgb(0.95, 0.1, 0.1),
-    //   });
-
-    //   let pdfBytes = await pdfDoc.save();
-    //   return pdfBytes;
-    // }
-
-
     insertInitialsToPDF(originalPdfBuffer, testPayload).then((buffer) => {
       setPdfBuffer(buffer);
       setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
