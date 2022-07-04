@@ -1,0 +1,213 @@
+{
+  "pdfLength": 4,
+  "allSigners": {
+    "owners": [
+      {
+        "email":"l91435419@gmail.com",
+        "ancherString":"O1",
+        "pages": [
+          {
+            "initialCoordinates": [
+              [
+                40,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [
+              [
+                40,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [
+              [
+                40,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [],
+            "signatureCoordinates": [
+              [
+                34,
+                205
+              ]
+            ],
+            "dateCoordinates": [
+              [
+                111,
+                205
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "email":"bo.fee4353st@yahoo.com",
+        "ancherString":"O2",
+        "pages": [
+          {
+            "initialCoordinates": [
+              [
+                51,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [
+              [
+                51,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [
+              [
+                51,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [],
+            "signatureCoordinates": [
+              [
+                34,
+                224
+              ]
+            ],
+            "dateCoordinates": [
+              [
+                111,
+                224
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "tenants": [
+      {
+        "email":"78787592343@yahoo.com",
+        "ancherString":"T1",
+        "pages": [
+          {
+            "initialCoordinates": [
+              [
+                92,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [
+              [
+                92,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [
+              [
+                92,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [],
+            "signatureCoordinates": [
+              [
+                34,
+                129
+              ]
+            ],
+            "dateCoordinates": [
+              [
+                111,
+                129
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "email":"pc45345ole@yahoo.com",
+        "ancherString":"T2",
+        "pages": [
+          {
+            "initialCoordinates": [
+              [
+                102,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [
+              [
+                102,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [
+              [
+                102,
+                262
+              ]
+            ],
+            "signatureCoordinates": [],
+            "dateCoordinates": []
+          },
+          {
+            "initialCoordinates": [],
+            "signatureCoordinates": [
+              [
+                34,
+                148
+              ]
+            ],
+            "dateCoordinates": [
+              [
+                111,
+                148
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

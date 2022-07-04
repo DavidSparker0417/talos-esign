@@ -1,4 +1,4 @@
-import { Button, Grid, styled, Typography, useTheme } from "@mui/material";
+import { Box, Button, Grid, styled, Typography, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import { pdfjs } from "react-pdf";
@@ -14,18 +14,25 @@ export default function PdfViewer({ pdf, curPage }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [scale, setScale] = useState(1);
   const [pageWidth, setPageWidth] = useState();
+  const [pageOrgHeight, setPageOrgHeight] = useState();
   const [pageHeight, setPageHeight] = useState();
-  const classes = useStyles({pageHeight: "900px"});
+  const classes = useStyles({ pageHeight: "900px" });
 
-  function handlePageScale(parentWidth) {
+  function handlePageScale(parentWidth, parentHeight) {
     const scaleW = parentWidth / pageWidth;
-    setScale(scaleW);
+    const scaleH = parentHeight / pageOrgHeight;
+    const scale_ = Math.max(scaleW, scaleH);
+    // console.log("++++++ handlePageScale :: ", scaleW, scaleH);
+    setScale(scaleH);
   }
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver((event) => {
       if (pageWidth) {
-        handlePageScale(event[0].contentBoxSize[0].inlineSize);
+        handlePageScale(
+          event[0].contentBoxSize[0].inlineSize,
+          event[0].contentBoxSize[0].blockSize
+        );
       }
     });
 
@@ -43,17 +50,23 @@ export default function PdfViewer({ pdf, curPage }) {
   }
 
   useEffect(() => {
-    if (!pageWidth || !pageContainerRef.current) return;
+    if (!pageWidth || !pageContainerRef?.current) return;
 
     console.log(
       pageWidth,
-      pageContainerRef.current.clientWidth
+      pageContainerRef.current.clientWidth,
+      pageContainerRef.current.clientHeight
     );
-    handlePageScale(pageContainerRef.current.clientWidth);
+    handlePageScale(
+      pageContainerRef.current.clientWidth,
+      pageContainerRef.current.clientHeight
+    );
   }, [pageWidth]);
 
   function onLoadSuccess(page) {
     setPageWidth(page.originalWidth);
+    setPageOrgHeight(page.originalHeight);
+    console.log("[PDF] :: W/H", page.originalWidth, page.originalHeight);
   }
 
   function onRenderSuccess(page) {
@@ -67,35 +80,37 @@ export default function PdfViewer({ pdf, curPage }) {
   return (
     <Grid
       container
-      justifyContent="center"
+      justifyContent="space-between"
       alignItems="center"
-      ref={pageContainerRef}
-      className = {classes.PDFDocWrapper}
+      flexDirection="column"
+      wrap="nowrap"
+      width="100%"
+      height="100%"
     >
+      <Box ref={pageContainerRef} className={classes.PDFDocWrapper} width="100%" height="100%">
       {pdf && (
-        <Document
-          file={pdf.url}
-          onLoadSuccess={onDocumentLoadSuccess}
+        <Document 
+          file={pdf.url} onLoadSuccess={onDocumentLoadSuccess}
         >
           <Swiper
             direction={"vertical"}
-            onSwiper={(swiper) => console.log("SWIPER :: ", swiper)}
             onSlideChange={onSliderChange}
             pagination={{
               clickable: true,
             }}
             modules={[Pagination]}
-            style={{width:"100%", height: pageHeight}}
+            style={{width:"100%", height: pageContainerRef.current.clientHeight}}
           >
             {Array(totalPages)
               .fill(true)
               .map((_, i) => (
                 <SwiperSlide key={`page-${i}`}>
                   <Page
-                    renderTextLayer={false}
                     pageNumber={i+1}
-                    scale={scale}
+                    // scale={scale}
                     noData={false}
+                    renderTextLayer={false}
+                    height={pageContainerRef.current.clientHeight}
                     onLoadSuccess={i === 1 ? onLoadSuccess : () => {}}
                     onRenderSuccess={i === 1 ? onRenderSuccess: () => {}}
                   />
@@ -104,6 +119,7 @@ export default function PdfViewer({ pdf, curPage }) {
           </Swiper>
         </Document>
       )}
+      </Box>
       <Grid container alignItems="center" justifyContent="space-between">
         <Grid item xs={3} paddingLeft="16px" overflow="hidden">
           <Typography fontSize="14px">{pdf?.filename}</Typography>

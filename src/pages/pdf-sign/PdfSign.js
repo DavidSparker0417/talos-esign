@@ -5,6 +5,7 @@ import { Box, Button, Grid } from "@mui/material";
 // components
 import PdfViewer from "./components/PdfViewer/PdfViewer";
 import testPayload from "./payload.json";
+import coorinates from "./coordinates.json";
 import { b64toBytes, insertInitialsToPDF, trimFileName } from "./helper";
 import SignPadV2 from "./components/signpad/signpad-hook";
 
@@ -18,12 +19,10 @@ export default function PdfSign() {
   const doc = testPayload.documents[0];
   const originalPdfBuffer = b64toBytes(doc.documentBase64);
   useEffect(() => {
-    insertInitialsToPDF(originalPdfBuffer, testPayload).then((buffer) => {
+    insertInitialsToPDF(originalPdfBuffer, coorinates).then((buffer) => {
       setPdfBuffer(buffer);
       setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
-      console.log("Initial inserted buffer = ", buffer);
     });
-    console.log(testPayload.recipients.signers[0]);
     setSigner(testPayload.recipients.signers[0]);
   }, []);
 
@@ -33,29 +32,30 @@ export default function PdfSign() {
     const blob = new Blob([pdfBuffer], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     setPdf((pdf) => ({ ...pdf, url }));
-    console.log("[DAVID] base64Response :: ", blob, url);
   }, [pdfBuffer]);
 
   useEffect(() => {
-    console.log("current page chaged: ", currentPage);
   }, [currentPage]);
 
   return (
-    <Box textAlign="center">
+    <Grid
+      container
+      direction="column"
+      wrap = "nowrap"
+      height="100%"
+    >
       <Button
         variant="contained"
         size="medium"
         color="button"
-        margin="auto"
         onClick={() => {
           setTogglePad(!togglePad);
         }}
+        sx = {{margin: "auto"}}
       >
         Start Signing Session
       </Button>
-      <Grid container>
-        <PdfViewer pdf={pdf} curPage={(page) => setCurrentPage(page)} />
-      </Grid>
+      <PdfViewer pdf={pdf} curPage={(page) => setCurrentPage(page)} />
       {togglePad ? (
         <div
           style={{
@@ -79,6 +79,6 @@ export default function PdfSign() {
       ) : (
         <></>
       )}
-    </Box>
+    </Grid>
   );
 }

@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument, PDFDocumentFactory, rgb, StandardFonts } from "pdf-lib";
 
 export default function b64toBlob(b64Data, contentType = "", sliceSize = 512) {
   const byteCharacters = atob(b64Data);
@@ -67,21 +67,56 @@ export function getBinaryFromPublic(path) {
     });
 }
 
-export async function insertInitialsToPDF(pdfBuffer, payload) {
-  const signers = payload?.recipients?.signers;
-  if (!signers)
+export async function insertInitialsToPDF(pdfBuffer, coordinates) {
+  const owners = coordinates?.allSigners?.owners;
+  const tenants = coordinates?.allSigners?.tenants;
+  if (!owners || !tenants)
     return pdfBuffer;
   
   const pdfDoc = await PDFDocument.load(pdfBuffer);
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const pages = pdfDoc.getPages();
   const curPage = pages[0];
+  const form = pdfDoc.getForm();
+  const fields = form.getFields();
+  console.log("[CUR PAGE] With/Height = ", curPage.getWidth(), curPage.getHeight());
+  console.log("=================== fields in pdf :: ",
+    form, 
+    form.acroForm.getAllFields(),
+    form.acroForm.getFields()
+  );
 
-  signers.map((s, i) => {
-    const initialTab = s?.tabs?.initialHereTabs[0];
-    curPage.drawText(initialTab.anchorString, {
-      x: 120 + i*30, //parseFloat(initialTab.anchorXOffset),
-      y: 95, //parseFloat(initialTab.anchorYOffset), 
+  fields.map((f, i) => {
+    const type = f.constructor.name;
+    const name = f.getName();
+    const widget = f.acroField.getWidgets()[0];
+    const rect = widget.Rect();
+    console.log("************** [PDFFIELD] :: ", 
+      name, "::", 
+      rect.toString());
+  })
+
+  owners.map((s, i) => {
+    const initialTab = s?.pages[0];
+    const x = parseFloat(initialTab.initialCoordinates[0][0]);
+    const y = parseFloat(initialTab.initialCoordinates[0][1]);
+    console.log(`+++++++++++++ :: (${x}, ${y})`);
+    curPage.drawText(s.ancherString, {
+      x, 
+      y,
+      size: 10, 
+      font: helveticaFont, 
+      color: rgb(0.95, 0.1, 0.1),
+    });
+  })
+
+  tenants.map((s, i) => {
+    const initialTab = s?.pages[0];
+    const x = parseFloat(initialTab.initialCoordinates[0][0]);
+    const y = parseFloat(initialTab.initialCoordinates[0][1]);
+    console.log(`+++++++++++++ :: (${x}, ${y})`);
+    curPage.drawText(s.ancherString, {
+      x, y,
       size: 10, 
       font: helveticaFont, 
       color: rgb(0.95, 0.1, 0.1),
@@ -89,6 +124,19 @@ export async function insertInitialsToPDF(pdfBuffer, payload) {
   })
 
   let pdfBytes = await pdfDoc.save();
-  console.log("+++++++++ insertInitialsToPDF :: ", pdfBytes);
-  return pdfBytes;
+  return pdfBuffer;
 }
+
+// export async function insertInitialsToPDF(pdfBuffer, payload) {
+//   const signers = payload?.recipients?.signers;
+//   if (!signers)
+//     return pdfBuffer;
+  
+//   const pdfDoc = await PDFDocument.load(pdfBuffer);
+  
+//   console.log("=================== fields in pdf :: ",
+//     pdfDoc
+//   );
+  
+//   return pdfBuffer;
+// }

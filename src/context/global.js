@@ -10,7 +10,6 @@ export function GlobalProvider({ children }) {
         return res.json();
       })
       .then(function (data) {
-        console.log("[DAVID] Config loaded. config = ", data);
         localStorage.setItem("config", JSON.stringify(data));
         setConfig(data);
       })
@@ -20,7 +19,6 @@ export function GlobalProvider({ children }) {
   }
 
   useEffect(() => {
-    console.log("[DAVID] +++++++++++++ Initial Loading ++++++++++ ");
     loadConfig();  
     const ac = new AbortController();
     const callCheckLoginState = async() => {

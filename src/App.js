@@ -4,9 +4,10 @@ import Login from "./pages/auth/login";
 import PrivateRoute, { PublicRoute } from "./routes/route";
 import PdfSign from "./pages/pdf-sign/PdfSign";
 import Test from "./pages/test";
+import { Box } from "@mui/material";
 
 function App() {
-  return (<>
+  return (<Box display="flex" flexDirection="column" height="100%">
     <Routes>
       <Route
         path="/app"
@@ -31,7 +32,7 @@ function App() {
 
       <Route exact path="/" element={<Navigate to="/app" />} />
     </Routes>
-    </>
+    </Box>
   );
 }
 
