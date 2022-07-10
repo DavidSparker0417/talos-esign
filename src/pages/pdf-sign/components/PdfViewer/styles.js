@@ -5,10 +5,14 @@ export default makeStyles(props => {
     PDFDocWrapper: {
       "& .react-pdf__Document": {
         overflow: "hidden",
-        width: "100%"
+        // width: "100%"
       },
       "& .react-pdf__Page__canvas" : {
         width: "100%!important",
+      },
+      "& .swiper-slide" : {
+        position: "relative",
+        display: "flex"
       }
     },
   };

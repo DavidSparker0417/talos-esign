@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
+import {useSelector, useDispatch} from "react-redux";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { Box, Button, Grid } from "@mui/material";
+import queryString from "query-string"
 
 // components
 import PdfViewer from "./components/PdfViewer/PdfViewer";
 import testPayload from "./payload.json";
 import coorinates from "./coordinates.json";
-import { b64toBytes, insertInitialsToPDF, trimFileName } from "./helper";
+import { b64toBytes, getCoordFromSigner, trimFileName } from "./helper";
 import SignPadV2 from "./components/signpad/signpad-hook";
+import { drawTab, pdfLoad, setDrawData } from "../../redux/tabs";
+import TriggerPanel from "./section/trigger";
 
 export default function PdfSign() {
   const [pdf, setPdf] = useState();
@@ -15,15 +19,23 @@ export default function PdfSign() {
   const [togglePad, setTogglePad] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [signer, setSigner] = useState();
+  const [coord, setCoord] = useState();
+  const tabs = useSelector(state => state.tabs.pages);
+  const setting = useSelector(state => state.tabs.drawData);
+  const editFinished = useSelector(state => state.tabs.editFinished);
+  const dispatch = useDispatch();
 
   const doc = testPayload.documents[0];
   const originalPdfBuffer = b64toBytes(doc.documentBase64);
   useEffect(() => {
-    insertInitialsToPDF(originalPdfBuffer, coorinates).then((buffer) => {
-      setPdfBuffer(buffer);
-      setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
-    });
-    setSigner(testPayload.recipients.signers[0]);
+    const {id} = queryString.parse(window.location.search);
+    const signers = testPayload?.recipients?.signers;
+    const s = signers.find(s => s.recipientId === parseInt(id));
+    setSigner(s);
+    const c = getCoordFromSigner(s, coorinates);
+    setCoord(c);
+    setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
+    setPdfBuffer(originalPdfBuffer);
   }, []);
 
   useEffect(() => {
@@ -32,10 +44,58 @@ export default function PdfSign() {
     const blob = new Blob([pdfBuffer], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     setPdf((pdf) => ({ ...pdf, url }));
+    PDFDocument.load(pdfBuffer)
+      .then(doc => {
+        dispatch(pdfLoad({buffer:pdfBuffer, pageCount:doc.getPageCount()}));
+        // dispatch(pdfLoad(doc));
+      });
   }, [pdfBuffer]);
 
   useEffect(() => {
   }, [currentPage]);
+
+  function setup(settings) {
+    console.log("+++++++++++ setup completed :: ", settings);
+    dispatch(setDrawData(settings));
+  }
+
+  async function onInitialTabClick(pn) {
+    const tab = tabs[pn].initial.pos;
+    console.log(`++++++++ :: onInitialTabClick(${pn})`, tab);
+    if (!setting?.initial?.url) {
+      console.log(`You have to setup befor this.`);
+      return;
+    }
+    dispatch(drawTab({index: pn, type: "initial"}));
+    
+    // const curPage = pdf?.doc?.getPages()[pn];
+    // const png = await pdf.doc.embedPng(setting.initial);
+    // const pngDims = png.scale(0.1);
+    // const y = curPage.getHeight() - tab.py;
+    // curPage.drawImage(png, {
+    //   x: tab.px,
+    //   y: y,
+    //   width: 100,
+    //   height: 40
+    // });
+
+    // let pdfBytes = await pdf.doc.save();
+    // setPdfBuffer(pdfBytes);
+  }
+
+  function onSignatureTabClick(pn) {
+    console.log("++++++++ :: onSignatureTabClick", pn);
+    const tab = tabs[pn].sig.pos;
+    if (!setting?.sig?.url) {
+      console.log(`You have to setup befor this.`);
+      return;
+    }
+    dispatch(drawTab({index: pn, type: "signature"}));
+  }
+
+  function onSetting() {
+    setTogglePad(!togglePad);
+  }
 
   return (
     <Grid
@@ -44,18 +104,15 @@ export default function PdfSign() {
       wrap = "nowrap"
       height="100%"
     >
-      <Button
-        variant="contained"
-        size="medium"
-        color="button"
-        onClick={() => {
-          setTogglePad(!togglePad);
-        }}
-        sx = {{margin: "auto"}}
-      >
-        Start Signing Session
-      </Button>
-      <PdfViewer pdf={pdf} curPage={(page) => setCurrentPage(page)} />
+      <TriggerPanel onSetting={onSetting}/>
+      <PdfViewer 
+        pdf={pdf} 
+        curPage={(page) => setCurrentPage(page)} 
+        coordinates = {coorinates}
+        signer = {signer}
+        onInitialTabClick = {onInitialTabClick}
+        onSignatureTabClick = {onSignatureTabClick}
+      />
       {togglePad ? (
         <div
           style={{
@@ -74,6 +131,7 @@ export default function PdfSign() {
             close={() => setTogglePad(false)}
             page={currentPage}
             signer={signer}
+            setup = {setup}
           />
         </div>
       ) : (

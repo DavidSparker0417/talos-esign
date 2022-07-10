@@ -1033,7 +1033,7 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.3.1", "@babel/runtime@^7.8.3":
+"@babel/runtime@^7.3.1", "@babel/runtime@^7.7.4", "@babel/runtime@^7.8.3":
   version "7.18.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.6.tgz#6a1ef59f838debd670421f8c7f2cbb8da9751580"
   integrity sha512-t9wi7/AW6XtKahAe20Yw0/mMljKq0B1r2fPdvaAdV/KPDZewFXdaaa6K7lxmZBZ8FBNpCiAT6iHPmd6QO9bKfQ==
@@ -2027,6 +2027,13 @@
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.1.3.tgz#6801033be7ff87a6b7cadaf5b337c9f366a3c4b0"
   integrity sha512-WiBSI6JBIhC6LRIsB2Kwh8DsGTlbBU+mLRxJmAe3LjHTdkDpwIbEOZgoXBbZilk/vlfjK8i6nKRAvIRn1XaIMw==
+
+"@samuelmeuli/font-manager@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@samuelmeuli/font-manager/-/font-manager-1.4.0.tgz#8499a00f5e48850128669e0c0775ae3a081bc0be"
+  integrity sha512-TaPoX4qA6ABrACiSI18lQOOKjvbLNrT+84UWfzwcguWQ4nT+sprOSRyt/RVXnt9fQp/wFQVC2NcHbzd+AkXffg==
+  dependencies:
+    "@babel/runtime" "^7.7.4"
 
 "@sinclair/typebox@^0.23.3":
   version "0.23.5"
@@ -6022,6 +6029,11 @@ fill-range@^7.0.1:
   dependencies:
     to-regex-range "^5.0.1"
 
+filter-obj@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/filter-obj/-/filter-obj-1.1.0.tgz#9b311112bc6c6127a16e016c6c5d7f19e0805c5b"
+  integrity sha512-8rXg1ZnX7xzy2NGDVkBVaAy+lSlPNwad13BtgSlLuxfIslyt5Vg64U7tFcCt4WS1R0hvtnQybT/IyCkGZ3DpXQ==
+
 finalhandler@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/finalhandler/-/finalhandler-1.2.0.tgz#7d23fe5731b207b4640e4fcd00aec1f9207a7b32"
@@ -6096,6 +6108,13 @@ follow-redirects@^1.0.0, follow-redirects@^1.14.9:
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.1.tgz#0ca6a452306c9b276e4d3127483e29575e207ad5"
   integrity sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==
+
+font-picker-react@^3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/font-picker-react/-/font-picker-react-3.5.2.tgz#6111fb37091d2ed210140c03fcebce0f6469cff3"
+  integrity sha512-0JkWIDf2hi6JwnvjIiacLDhO+Sl38RQ4mUGhCWN+Hvj95XalVZ0Aq5zJs/Ybend4uk2yI9rd1QhRRF9RnfHqIQ==
+  dependencies:
+    "@samuelmeuli/font-manager" "^1.4.0"
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -9838,6 +9857,16 @@ query-string@^5.0.1:
     object-assign "^4.1.0"
     strict-uri-encode "^1.0.0"
 
+query-string@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.1.tgz#754620669db978625a90f635f12617c271a088e1"
+  integrity sha512-MplouLRDHBZSG9z7fpuAAcI7aAYjDLhtsiVZsevsfaHWDS2IDdORKbSd1kWUA+V4zyva/HZoSfpwnYMMQDhb0w==
+  dependencies:
+    decode-uri-component "^0.2.0"
+    filter-obj "^1.1.0"
+    split-on-first "^1.0.0"
+    strict-uri-encode "^2.0.0"
+
 querystring@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
@@ -10091,6 +10120,14 @@ react-scripts@5.0.1:
     workbox-webpack-plugin "^6.4.1"
   optionalDependencies:
     fsevents "^2.3.2"
+
+react-signature-canvas@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-signature-canvas/-/react-signature-canvas-1.0.6.tgz#095a8c2341cb7ba0b23ddd167955147b062c91ee"
+  integrity sha512-NoMHomYu9HxFeLjUGbIeV9abPdWSROfFxFNDekGdwmmaIx+w5ziOEiU2C34X0Ao4GxFnwqyUy/BpYlA4lCD1CA==
+  dependencies:
+    signature_pad "^2.3.2"
+    trim-canvas "^0.1.0"
 
 react-signature-pad-wrapper@^3.2.0:
   version "3.2.0"
@@ -10757,6 +10794,11 @@ signal-exit@^3.0.2, signal-exit@^3.0.3:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
   integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
+
+signature_pad@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/signature_pad/-/signature_pad-2.3.2.tgz#ca7230021c89cedeead27b33d8d16ff254e5f04a"
+  integrity sha512-peYXLxOsIY6MES2TrRLDiNg2T++8gGbpP2yaC+6Ohtxr+a2dzoaqWosWDY9sWqTAAk6E/TyQO+LJw9zQwyu5kA==
 
 signature_pad@^4.0.0, signature_pad@^4.0.5:
   version "4.0.5"
@@ -11470,6 +11512,11 @@ tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=
+
+trim-canvas@^0.1.0:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/trim-canvas/-/trim-canvas-0.1.2.tgz#620457f5fecf564b521d35c5fcd4da58304d6e45"
+  integrity sha512-nd4Ga3iLFV94mdhW9JFMLpQbHUyCQuhFOD71PEAt1NjtMD5wbZctzhX8c3agHNybMR5zXD1XTGoIEWk995E6pQ==
 
 tryer@^1.0.1:
   version "1.0.1"

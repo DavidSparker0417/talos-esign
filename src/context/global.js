@@ -42,7 +42,6 @@ export function GlobalProvider({ children }) {
     // check if current user is expired
     AuthService.checkUserValid()
       .then((response) => {
-        console.log("[DAVID] checkLoginState :: checkResult = ", response);
       })
       .catch(e => {
         if (e.response) {

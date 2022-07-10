@@ -80,27 +80,18 @@ export async function insertInitialsToPDF(pdfBuffer, coordinates) {
   const form = pdfDoc.getForm();
   const fields = form.getFields();
   console.log("[CUR PAGE] With/Height = ", curPage.getWidth(), curPage.getHeight());
-  console.log("=================== fields in pdf :: ",
-    form, 
-    form.acroForm.getAllFields(),
-    form.acroForm.getFields()
-  );
 
   fields.map((f, i) => {
     const type = f.constructor.name;
     const name = f.getName();
     const widget = f.acroField.getWidgets()[0];
     const rect = widget.Rect();
-    console.log("************** [PDFFIELD] :: ", 
-      name, "::", 
-      rect.toString());
   })
 
   owners.map((s, i) => {
     const initialTab = s?.pages[0];
     const x = parseFloat(initialTab.initialCoordinates[0][0]);
     const y = parseFloat(initialTab.initialCoordinates[0][1]);
-    console.log(`+++++++++++++ :: (${x}, ${y})`);
     curPage.drawText(s.ancherString, {
       x, 
       y,
@@ -114,7 +105,6 @@ export async function insertInitialsToPDF(pdfBuffer, coordinates) {
     const initialTab = s?.pages[0];
     const x = parseFloat(initialTab.initialCoordinates[0][0]);
     const y = parseFloat(initialTab.initialCoordinates[0][1]);
-    console.log(`+++++++++++++ :: (${x}, ${y})`);
     curPage.drawText(s.ancherString, {
       x, y,
       size: 10, 
@@ -127,16 +117,35 @@ export async function insertInitialsToPDF(pdfBuffer, coordinates) {
   return pdfBuffer;
 }
 
-// export async function insertInitialsToPDF(pdfBuffer, payload) {
-//   const signers = payload?.recipients?.signers;
-//   if (!signers)
-//     return pdfBuffer;
+export function getCoordFromSigner(signer, coordinates) {
+  if (!signer || !coordinates)
+    return undefined;
   
-//   const pdfDoc = await PDFDocument.load(pdfBuffer);
+  let cooSigner;
+  cooSigner = coordinates.allSigners?.owners.find(
+    (o) => o.email === signer.email
+  );
+  if (!cooSigner)
+    cooSigner = coordinates.allSigners?.tenants.find(
+      (o) => o.email === signer.email
+    );
   
-//   console.log("=================== fields in pdf :: ",
-//     pdfDoc
-//   );
-  
-//   return pdfBuffer;
-// }
+  return cooSigner;
+}
+
+export function convertMMtoPixel(mmpos, scaleW, scaleH) {
+  let x, y;
+  if (!mmpos || !mmpos?.length || mmpos.length < 2) return;
+
+  x = mmpos[0];
+  y = mmpos[1];
+
+  let px, py;
+  px = (x / 25.4) * 72;
+  py = (y / 25.4) * 72;  
+  if (scaleW)
+    x = px * scaleW;
+  if (scaleH)
+    y = py * scaleH;
+  return { x, y, px, py };
+}

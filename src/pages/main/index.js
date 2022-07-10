@@ -14,12 +14,14 @@ export default function Main() {
   return (
     <>
       <NavBar
-        components={[<Typography variant="h4">Smart Contracts</Typography>]}
+        components={[
+        <Typography variant="h4" fontSize={{xs:"24px", sm:"36px"}}>Smart Contracts</Typography>
+      ]}
       />
       <Routes>
-        <Route exact path="doc-sign" element={<PdfSign />} />
+        <Route exact path="doc-sign/*" element={<PdfSign />} />
         <Route exact path="test" element={<Test />} />
-        <Route exact path="/" element={<Navigate to="doc-sign" />} />
+        <Route exact path="/" element={<Navigate to="doc-sign?id=4" />} />
       </Routes>
     </>
   );
