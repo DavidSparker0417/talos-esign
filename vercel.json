@@ -1,3 +1,7 @@
 {
-  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
+  "routes": [
+    { "src": "/", "dest": "/" },
+    { "src": "/app", "dest": "/" },
+    { "src": "/app/doc-sign?id=4", "dest": "/" }
+  ]
 }
