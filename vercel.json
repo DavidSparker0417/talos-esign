@@ -2,6 +2,6 @@
   "routes": [
     { "src": "/", "dest": "/" },
     { "src": "/app", "dest": "/" },
-    { "src": "/app/doc-sign?id=4", "dest": "/" }
+    { "src": "/app/doc-sign*", "dest": "/" }
   ]
 }
