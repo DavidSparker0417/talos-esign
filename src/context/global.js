@@ -19,7 +19,7 @@ export function GlobalProvider({ children }) {
   }
 
   useEffect(() => {
-    loadConfig();  
+    // loadConfig();  
     const ac = new AbortController();
     const callCheckLoginState = async() => {
       checkLoginState().then(() => {
