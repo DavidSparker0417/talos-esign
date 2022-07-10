@@ -17,7 +17,7 @@ function App() {
           </PrivateRoute>
         }
       >
-        <Route path="doc-sign" element={<PdfSign/>}/>
+        <Route path="doc-sign*" element={<PdfSign/>}/>
         <Route path="test" element={<Test/>}/>
       </Route>
 
