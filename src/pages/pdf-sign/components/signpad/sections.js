@@ -92,7 +92,7 @@ const FingerDrawPanel = forwardRef((props, ref) => {
       <Typography backgroundColor="yellow">{props.title}</Typography>
       <SignaturePad 
         dotSize = {4.5}
-        minWidth={5}
+        minWidth={3}
         maxWidth={10}
         canvasProps = {{
           style: {
