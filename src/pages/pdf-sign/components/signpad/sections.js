@@ -50,7 +50,7 @@ export default function SignerNamePanel({ name, setName, abrName, setAbrName, ..
 }
 
 export function ChooseStyle({ onStyleChange, ...rest }) {
-  const [type, setType] = useState(0);
+  const [type, setType] = useState(1);
 
   useEffect(() => {
     onStyleChange && onStyleChange(type);
@@ -86,10 +86,18 @@ export function ChooseStyle({ onStyleChange, ...rest }) {
   );
 }
 
-const FingerDrawPanel = forwardRef((props, ref) => {
+const FingerDrawPanel = forwardRef(({type, title}, ref) => {
+  useEffect(() => {
+    if(type == 1) {
+      ref.current.off();
+    } else {
+      ref.current.on();
+    }
+  }, [type, ref]);
+  
   return (
     <Box border="solid 1px black">
-      <Typography backgroundColor="yellow">{props.title}</Typography>
+      <Typography backgroundColor="yellow">{title}</Typography>
       <SignaturePad 
         dotSize = {4.5}
         minWidth={3}
@@ -181,8 +189,8 @@ export const DrawPanel = forwardRef((props, ref) => {
         </Button>
       </Grid>
       <Box>
-        <FingerDrawPanel title="Signature" ref={signRef} />
-        <FingerDrawPanel title="Initial" ref={initialRef} />
+        <FingerDrawPanel title="Signature" type={props.type} ref={signRef} />
+        <FingerDrawPanel title="Initial" type={props.type} ref={initialRef} />
         <FontPicker
           apiKey="AIzaSyAKBqo-hpY-nz_NG-kbQ3LxwPF_CKIBmnk"
           activeFontFamily={activeFont}
