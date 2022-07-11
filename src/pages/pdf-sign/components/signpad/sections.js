@@ -4,6 +4,7 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  Menu,
   MenuItem,
   Select,
   TextField,
@@ -14,37 +15,52 @@ import getAbbrName from "./helpers";
 import SignaturePad from "react-signature-canvas";
 import FontPicker from "font-picker-react";
 import DSButton from "../../../../components/DSButton";
+import DSTypography from "../../../../components/DSTypography";
+import DSBox from "../../../../components/DSBox";
+import DSInput from "../../../../components/DSInput";
 
-export default function SignerNamePanel({ name, setName, abrName, setAbrName, ...rest }) {
-
+function NameBox({ label, value, setValue, ...rest }) {
   return (
-    <Grid container {...rest}>
-      <Grid item xs={8}>
-        <TextField
-          required
-          id="outlined-required"
-          label="FULL NAME"
-          value={name}
-          onChange={({target}) => setName(target.value)}
-          fullWidth
-          inputProps={{
-            style: {padding: "0.2rem"}
-          }}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <TextField
-          required
-          id="outlined-required"
-          label="INITIALS"
-          value={abrName}
-          fullWidth
-          onChange={({ target }) => setAbrName(target.value)}
-          inputProps={{
-            style: {padding: "0.2rem"}
-          }}
-        />
-      </Grid>
+    <Grid container wrap="nowrap" flexDirection="column" {...rest}>
+      <Typography fontSize="12px">
+        {label}
+        <Typography component="span" color="#bd0808">
+          &nbsp;*
+        </Typography>
+      </Typography>
+      <DSInput
+        required
+        id="outlined-required"
+        value={value}
+        onChange={({ target }) => setValue(target.value)}
+        sx={{
+          border: "solid 2px grey"
+        }}
+        InputProps = {{
+          style : {
+            fontSize: "3vw"
+          }
+        }}
+      />
+    </Grid>
+  );
+}
+
+export default function SignerNamePanel({
+  name,
+  setName,
+  abrName,
+  setAbrName,
+  ...rest
+}) {
+  return (
+    <Grid container {...rest} justifyContent="space-between">
+      {/* <Grid item xs={7}> */}
+      <NameBox label="FULL NAME" value={name} setValue={setName} xs={6}/>
+      {/* </Grid> */}
+      {/* <Grid item xs={4}> */}
+      <NameBox label="INITIALS" value={abrName} setValue={setAbrName} xs={4}/>
+      {/* </Grid> */}
     </Grid>
   );
 }
@@ -58,7 +74,7 @@ export function ChooseStyle({ onStyleChange, ...rest }) {
 
   return (
     <Grid container>
-      <FormControl {...rest} style={{flex:1}}>
+      <FormControl {...rest} style={{ flex: 1 }}>
         <InputLabel id="draw-style-label">CHOOSE STYLE</InputLabel>
         <Select
           labelId="draw-style-label"
@@ -76,41 +92,37 @@ export function ChooseStyle({ onStyleChange, ...rest }) {
           <MenuItem value={1}>TEXT</MenuItem>
         </Select>
       </FormControl>
-      <DSButton style={{ flex: 1 }}>
-        {type === 0 ? "DRAW" : "TEXT"}
-      </DSButton>
-      <DSButton style={{ flex: 1 }}>
-        UPLOAD
-      </DSButton>
+      <DSButton style={{ flex: 1 }}>{type === 0 ? "DRAW" : "TEXT"}</DSButton>
+      <DSButton style={{ flex: 1 }}>UPLOAD</DSButton>
     </Grid>
   );
 }
 
-const FingerDrawPanel = forwardRef(({type, title}, ref) => {
+const FingerDrawPanel = forwardRef(({ type, title }, ref) => {
   useEffect(() => {
-    if(type == 1) {
+    if (type == 1) {
       ref.current.off();
     } else {
       ref.current.on();
     }
   }, [type, ref]);
-  
+
   return (
-    <Box border="solid 1px black">
+    <DSBox border="solid 2px" borderColor="border">
       <Typography backgroundColor="yellow">{title}</Typography>
-      <SignaturePad 
-        dotSize = {4.5}
-        minWidth={3}
-        maxWidth={10}
-        canvasProps = {{
+      <SignaturePad
+        dotSize={2}
+        minWidth={2}
+        maxWidth={5}
+        canvasProps={{
           style: {
             width: "100%",
             height: "150px",
-          }
+          },
         }}
-        ref={ref} 
+        ref={ref}
       />
-    </Box>
+    </DSBox>
   );
 });
 
@@ -135,14 +147,81 @@ const TextStyledPanel = forwardRef(
   }
 );
 
+export const fontList = [
+  "Mr Dafoe",
+  "Pacifico",
+  "Permanent Marker",
+  "Sriracha",
+  "Yellowtail",
+  "Architects Daughter",
+  "Berkshire Swash",
+  "Caveat Brush",
+  "Damion",
+  "Gochi Hand",
+];
+
+function ChangeFonts({ name, onChangeFont }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    onChangeFont(fontList[0]);
+  }, []);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleChangeFont = (font) => {
+    setAnchorEl(null);
+    if (onChangeFont) onChangeFont(font);
+  };
+
+  return (
+    <Box>
+      <DSButton
+        id="basic-button"
+        variant="gradient"
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
+        sx={{
+          color: "mediumblue",
+          textTransform: "none",
+        }}
+      >
+        Chang STYLE
+      </DSButton>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={() => setAnchorEl(null)}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        {fontList.map((f, i) => (
+          <MenuItem
+            key={`font-change-${i}`}
+            onClick={() => handleChangeFont(f)}
+          >
+            <Typography fontFamily={f}>{name}</Typography>
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
+  );
+}
 export const DrawPanel = forwardRef((props, ref) => {
   const { signRef, initialRef } = ref;
-  const [activeFont, setActiveFont] = useState("Alex Brush");
+  const [activeFont, setActiveFont] = useState();
 
   function drawBySystemFont() {
-    if (props.type !== 1)
-      return;
+    if (props.type !== 1) return;
     clearSign();
+    console.log("drawBySystemFont :: ", activeFont);
     let ctx = signRef?.current?.getCanvas()?.getContext("2d");
     ctx.font = `48px ${activeFont}`;
     ctx.fillText(props.name, 10, 50);
@@ -155,17 +234,7 @@ export const DrawPanel = forwardRef((props, ref) => {
   useEffect(() => {
     clearSign();
     drawBySystemFont();
-  }, [props.type]);
-
-  useEffect(() => {
-    if (props.type !== 1)
-      return;
-    drawBySystemFont();
-  }, [activeFont]);
-
-  useEffect(() => {
-    drawBySystemFont();
-  }, [props.name, props.abrName]);
+  }, [props.type, activeFont, props.name, props.abrName]);
 
   function clearSign() {
     // setSignText("");
@@ -175,15 +244,20 @@ export const DrawPanel = forwardRef((props, ref) => {
 
   return (
     <Grid container wrap="nowrap" flexDirection="column">
-      <Grid item>
+      <Grid
+        item
+        mt={2}
+        container
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <DSTypography fontSize="1.5rem" color="border">
+          Preview
+        </DSTypography>
         <Button
           variant="text"
           color="primary"
-          onClick={clearSign}
-          sx={{
-            width: "fit-content",
-            float: "right",
-          }}
+          onClick={props.type === 0 ? clearSign : () => {}}
         >
           Clear
         </Button>
@@ -191,47 +265,17 @@ export const DrawPanel = forwardRef((props, ref) => {
       <Box>
         <FingerDrawPanel title="Signature" type={props.type} ref={signRef} />
         <FingerDrawPanel title="Initial" type={props.type} ref={initialRef} />
-        <FontPicker
-          apiKey="AIzaSyAKBqo-hpY-nz_NG-kbQ3LxwPF_CKIBmnk"
-          activeFontFamily={activeFont}
-          onChange={(nextFont) => setActiveFont(nextFont.family)}
-          categories="handwriting"
-        />
+        {props.type === 1 && (
+          <ChangeFonts name={props.name} onChangeFont={setActiveFont} />
+        )}
       </Box>
-      {/* {props.type === 0 ? (
-        <Box>
-          <FingerDrawPanel title="Signature" ref={signRef} />
-          <FingerDrawPanel title="Initial" ref={initialRef} />
-        </Box>
-      ) : (
-        <Box>
-          <TextStyledPanel 
-            title="Signature"
-            text={props.name} 
-            activeFont={activeFont} 
-            mb={1}
-          />
-          <TextStyledPanel 
-            title="Initial"
-            text={signText} 
-            activeFont={activeFont} 
-            mb={1}
-          />
-          <FontPicker
-            apiKey="AIzaSyAKBqo-hpY-nz_NG-kbQ3LxwPF_CKIBmnk"
-            activeFontFamily={activeFont}
-            onChange={(nextFont) => setActiveFont(nextFont.family)}
-            categories="handwriting"
-          />
-        </Box>
-      )} */}
-      <Typography mt={1} fontSize={{xs:"10px", sm: "16px"}}>
-          By selecting Adopt and Sign, I agree that the signature and initals
-          will be my electronic representation of my Signature and Initials for
-          all purposes within these documents. When I, my agent, or my
-          representative use them on all documents both on binding and non
-          binting contacts, such signatures and initals will act just the same
-          as a Pen to Paper signature and initial.
+      <Typography mt={1} fontSize={{ xs: "10px", sm: "16px" }}>
+        By selecting Adopt and Sign, I agree that the signature and initals will
+        be my electronic representation of my Signature and Initials for all
+        purposes within these documents. When I, my agent, or my representative
+        use them on all documents both on binding and non binting contacts, such
+        signatures and initals will act just the same as a Pen to Paper
+        signature and initial.
       </Typography>
     </Grid>
   );
@@ -239,23 +283,27 @@ export const DrawPanel = forwardRef((props, ref) => {
 
 export function FinishSettings({ onSign, onCancel }) {
   return (
-    <div style={{ display: "flex", height: "50px" }}>
-      <Button
-        variant="contained"
-        color="primary"
-        style={{ flex: 1, borderRadius: "0px" }}
+    <div style={{ display: "flex", height: "40px" }}>
+      <DSButton
         onClick={onSign}
+        sx={{
+          flex: 1,
+          textTransform: "none",
+        }}
       >
         ADOPT and SIGN
-      </Button>
-      <Button
-        variant="outlined"
-        color="primary"
-        style={{ flex: 1, borderRadius: "0px" }}
+      </DSButton>
+      <DSButton
+        variant="gradient"
+        sx={{
+          flex: 1,
+          color: "#c84c09",
+          textTransform: "none",
+        }}
         onClick={onCancel}
       >
         Cancel
-      </Button>
+      </DSButton>
     </div>
   );
 }

@@ -37,7 +37,6 @@ function ESTab({ x, y, color, drawn, image, width, height, ...rest }) {
 					}}
 				/>
 			: <Badge
-				bageContent="init"
 				{...rest}
 				sx={{
 					backgroundColor: color || "rebeccapurple",

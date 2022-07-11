@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {useSelector, useDispatch} from "react-redux";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import queryString from "query-string"
 
 // components
@@ -12,6 +12,7 @@ import { b64toBytes, getCoordFromSigner, trimFileName } from "./helper";
 import SignPadV2 from "./components/signpad/signpad-hook";
 import { drawTab, pdfLoad, setDrawData } from "../../redux/tabs";
 import TriggerPanel from "./section/trigger";
+import { fontList } from "./components/signpad/sections";
 
 export default function PdfSign() {
   const [pdf, setPdf] = useState();
@@ -137,6 +138,9 @@ export default function PdfSign() {
       ) : (
         <></>
       )}
+      {fontList.map((f, i) => (
+        <Typography fontFamily={f} height={0}>test</Typography>
+      ))}
     </Grid>
   );
 }

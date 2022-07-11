@@ -74,6 +74,11 @@ export default {
     focus: "#5dced6"
   },
 
+  border: {
+    main: "#6d6d6d",
+    focus: "#6d6d6d",
+  }, 
+  
   grey: {
     100: "#f8f9fa",
     200: "#f0f2f5",

@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
-import DGInputRoot from "./DGInputRoot";
+import DSInputRoot from "./DSInputRoot";
 
-const DGInput = forwardRef(({inputProps, ...rest}, ref) => (
-  <DGInputRoot 
+const DSInput = forwardRef(({inputProps, ...rest}, ref) => (
+  <DSInputRoot 
     {...rest} 
     ref={ref}
     inputProps={{
@@ -14,4 +14,4 @@ const DGInput = forwardRef(({inputProps, ...rest}, ref) => (
   />
 ))
 
-export default DGInput;
+export default DSInput;
