@@ -183,8 +183,9 @@ export default function SignPadV2({ pdfBuffer, page, signer, update, close, setu
         abrName={abrName}
         setAbrName={setAbrName}
         mb={3}
+        px={1}
       />
-      <ChooseStyle onStyleChange={(t) => setType(t)} />
+      <ChooseStyle onStyleChange={(t) => setType(t)} px={1}/>
       <DrawPanel 
         type={type} 
         name={name}

@@ -73,7 +73,7 @@ export function ChooseStyle({ onStyleChange, ...rest }) {
   }, [type]);
 
   return (
-    <Grid container>
+    <Grid container {...rest}>
       <FormControl {...rest} style={{ flex: 1 }}>
         <InputLabel id="draw-style-label">CHOOSE STYLE</InputLabel>
         <Select
@@ -243,7 +243,7 @@ export const DrawPanel = forwardRef((props, ref) => {
   }
 
   return (
-    <Grid container wrap="nowrap" flexDirection="column">
+    <Grid container wrap="nowrap" flexDirection="column" px={1}>
       <Grid
         item
         mt={2}
