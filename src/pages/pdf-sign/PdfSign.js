@@ -138,9 +138,6 @@ export default function PdfSign() {
       ) : (
         <></>
       )}
-      {fontList.map((f, i) => (
-        <Typography fontFamily={f} height={0}>test</Typography>
-      ))}
     </Grid>
   );
 }

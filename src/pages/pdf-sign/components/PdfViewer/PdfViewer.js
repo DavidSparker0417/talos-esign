@@ -263,7 +263,8 @@ export default function PdfViewer({
       </Box>
       <Grid container alignItems="center" justifyContent="space-between">
         <Grid item xs={6} paddingLeft="16px" overflow="hidden">
-          <Typography fontSize="14px">{pdf?.filename}</Typography>
+          <Typography component="span" fontSize="14px">{pdf?.filename}</Typography>
+          <Typography component="span" fontFamily="Mr Dafoe">&nbsp;</Typography>
         </Grid>
         <Grid item xs={6} paddingRight="16px" justifyContent="end">
           <Typography fontSize="14px" style={{ textAlign: "end" }}>
