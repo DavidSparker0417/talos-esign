@@ -7,7 +7,10 @@ import {
   Menu,
   MenuItem,
   Select,
+  styled,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -55,26 +58,79 @@ export default function SignerNamePanel({
 }) {
   return (
     <Grid container {...rest} justifyContent="space-between">
-      {/* <Grid item xs={7}> */}
       <NameBox label="FULL NAME" value={name} setValue={setName} xs={6}/>
-      {/* </Grid> */}
-      {/* <Grid item xs={4}> */}
       <NameBox label="INITIALS" value={abrName} setValue={setAbrName} xs={4}/>
-      {/* </Grid> */}
     </Grid>
   );
 }
 
+const DSToggleButton = styled(ToggleButton)(({theme}) => {
+  const {button, white, primary } = theme?.palette;
+  return {
+    backgroundColor: button.main,
+    color: white.main,
+    borderRadius: "0",
+    "&.Mui-selected, &.Mui-selected:hover": {
+      backgroundColor: primary.main,
+      color: white.main,
+    },
+    "&:hover" : {
+      backgroundColor: button.main,
+      color: "orange",
+    }
+  }
+});
+
 export function ChooseStyle({ onStyleChange, ...rest }) {
   const [type, setType] = useState(1);
+  const [editType, setEdityType] = useState("text");
 
   useEffect(() => {
-    onStyleChange && onStyleChange(type);
-  }, [type]);
+    if (!onStyleChange)
+      return;
+    
+    switch(editType) {
+      case "text":
+      case "upload":
+        onStyleChange(1);
+        break;
+      case "pen":
+        onStyleChange(0);
+        break;
+    }
+    // onStyleChange(type);
+  }, [editType]);
+
+  function handleChange(event, newType) {
+    setEdityType(newType);
+    console.log("[DAVID] +++++++++++ changine type :: ", newType);
+  }
 
   return (
     <Grid container {...rest}>
-      <FormControl {...rest} style={{ flex: 1 }}>
+      <ToggleButtonGroup 
+        exclusive
+        value = {editType}
+        onChange = {handleChange}
+        fullWidth
+      >
+        <DSToggleButton 
+          value="text" 
+        >
+            Text
+        </DSToggleButton>
+        <DSToggleButton
+          value="pen"
+        >
+          Pen
+        </DSToggleButton>
+        <DSToggleButton
+          value="upload"
+        >
+          upload
+        </DSToggleButton>
+      </ToggleButtonGroup>
+      {/* <FormControl {...rest} style={{ flex: 1 }}>
         <InputLabel id="draw-style-label">CHOOSE STYLE</InputLabel>
         <Select
           labelId="draw-style-label"
@@ -91,9 +147,9 @@ export function ChooseStyle({ onStyleChange, ...rest }) {
           <MenuItem value={0}>PEN</MenuItem>
           <MenuItem value={1}>TEXT</MenuItem>
         </Select>
-      </FormControl>
-      <DSButton style={{ flex: 1 }}>{type === 0 ? "DRAW" : "TEXT"}</DSButton>
-      <DSButton style={{ flex: 1 }}>UPLOAD</DSButton>
+      </FormControl> */}
+      {/* <DSButton style={{ flex: 1 }}>{type === 0 ? "DRAW" : "TEXT"}</DSButton> */}
+      {/* <DSButton style={{ flex: 1 }}>UPLOAD</DSButton> */}
     </Grid>
   );
 }
