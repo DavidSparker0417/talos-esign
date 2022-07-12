@@ -272,7 +272,7 @@ export default function PdfViewer({
         </Grid>
         <Grid item xs={6} paddingRight="16px" justifyContent="end">
           <Typography fontSize="14px" style={{ textAlign: "end" }}>
-            Page 1-{totalPages}{" "}
+            Page {currentPage+1}-{totalPages}{" "}
           </Typography>
         </Grid>
       </Grid>
