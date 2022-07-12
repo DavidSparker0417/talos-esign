@@ -23,7 +23,6 @@ export default function PdfSign() {
   const [coord, setCoord] = useState();
   const tabs = useSelector(state => state.tabs.pages);
   const setting = useSelector(state => state.tabs.drawData);
-  const editFinished = useSelector(state => state.tabs.editFinished);
   const dispatch = useDispatch();
 
   const doc = testPayload.documents[0];
@@ -60,40 +59,6 @@ export default function PdfSign() {
     dispatch(setDrawData(settings));
   }
 
-  async function onInitialTabClick(pn) {
-    const tab = tabs[pn].initial.pos;
-    console.log(`++++++++ :: onInitialTabClick(${pn})`, tab);
-    if (!setting?.initial?.url) {
-      console.log(`You have to setup befor this.`);
-      return;
-    }
-    dispatch(drawTab({index: pn, type: "initial"}));
-    
-    // const curPage = pdf?.doc?.getPages()[pn];
-    // const png = await pdf.doc.embedPng(setting.initial);
-    // const pngDims = png.scale(0.1);
-    // const y = curPage.getHeight() - tab.py;
-    // curPage.drawImage(png, {
-    //   x: tab.px,
-    //   y: y,
-    //   width: 100,
-    //   height: 40
-    // });
-
-    // let pdfBytes = await pdf.doc.save();
-    // setPdfBuffer(pdfBytes);
-  }
-
-  function onSignatureTabClick(pn) {
-    console.log("++++++++ :: onSignatureTabClick", pn);
-    const tab = tabs[pn].sig.pos;
-    if (!setting?.sig?.url) {
-      console.log(`You have to setup befor this.`);
-      return;
-    }
-    dispatch(drawTab({index: pn, type: "signature"}));
-  }
-
   function onSetting() {
     setTogglePad(!togglePad);
   }
@@ -111,8 +76,6 @@ export default function PdfSign() {
         curPage={(page) => setCurrentPage(page)} 
         coordinates = {coorinates}
         signer = {signer}
-        onInitialTabClick = {onInitialTabClick}
-        onSignatureTabClick = {onSignatureTabClick}
       />
       {togglePad ? (
         <div

@@ -104,8 +104,18 @@
                 262
               ]
             ],
-            "signatureCoordinates": [],
-            "dateCoordinates": []
+            "signatureCoordinates": [
+              [
+                21,
+                125
+              ]
+            ],
+            "dateCoordinates": [
+              [
+                152,
+                125
+              ]
+            ]
           },
           {
             "initialCoordinates": [],
@@ -159,16 +169,6 @@
             ],
             "signatureCoordinates": [
               [
-                152,
-                125
-              ]
-            ],
-            "dateCoordinates": []
-          },
-          {
-            "initialCoordinates": [],
-            "signatureCoordinates": [
-              [
                 21,
                 38
               ]
@@ -179,11 +179,26 @@
                 38
               ]
             ]
+          },
+          {
+            "initialCoordinates": [],
+            "signatureCoordinates": [
+              [
+                34,
+                129
+              ]
+            ],
+            "dateCoordinates": [
+              [
+                111,
+                129
+              ]
+            ]
           }
         ]
       },
       {
-        "email":"pcole@yahoo.com",
+       "email":"pcole@yahoo.com",
         "ancherString":"T2",
         "pages": [
           {

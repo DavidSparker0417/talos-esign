@@ -8,16 +8,16 @@ import {
   useTheme,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import { pdfjs } from "react-pdf";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Pagination, Scrollbar, Mousewheel } from "swiper";
 // styles
-import useStyles from "./styles";
+import useStyles, { FreshingBanner } from "./styles";
 import { minWidth } from "@mui/system";
 import { convertMMtoPixel } from "../../helper";
-import { setTab } from "../../../../redux/tabs";
+import { drawTab, setTab } from "../../../../redux/tabs";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
 function ESTab({ x, y, color, drawn, image, width, height, ...rest }) {
@@ -33,17 +33,15 @@ function ESTab({ x, y, color, drawn, image, width, height, ...rest }) {
 					sx = {{
 						position: "absolute",
 						left: `${x}px`,
-						top: `${y - 8}px`,
+						top: `${y - height/2}px`,
 					}}
 				/>
-			: <Badge
+			: <FreshingBanner
 				{...rest}
 				sx={{
-					backgroundColor: color || "rebeccapurple",
-					cursor: "pointer",
 					position: "absolute",
 					left: `${x}px`,
-					top: `${y - 8}px`,
+					top: `${y - height/2}px`,
 					width: {width},
 					height: {height},
 				}}
@@ -58,20 +56,18 @@ export default function PdfViewer({
   curPage,
   coordinates,
   signer,
-  onInitialTabClick,
-  onSignatureTabClick,
 }) {
   const pageContainerRef = useRef(null);
   const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [scale, setScale] = useState([]);
-  const [pageWidth, setPageWidth] = useState();
-  const [pageOrgHeight, setPageOrgHeight] = useState();
   const classes = useStyles({ pageHeight: "900px" });
   const [coord, setCoord] = useState();
   const dispatch = useDispatch();
 	const tabs = useSelector(state => state.tabs.pages);
 	const drawData = useSelector(state => state.tabs.drawData)
+  const [swiper, setSwiper] = useState();
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!signer || !coordinates) return;
@@ -85,46 +81,6 @@ export default function PdfViewer({
       );
     setCoord(cooSigner);
   }, [signer, coordinates]);
-
-  // function handlePageScale(parentWidth, parentHeight) {
-  //   const scaleW = parentWidth / pageWidth;
-  //   const scaleH = parentHeight / pageOrgHeight;
-  //   const scale_ = Math.max(scaleW, scaleH);
-  //   setScale(scaleH);
-  // }
-
-  // useEffect(() => {
-  //   const resizeObserver = new ResizeObserver((event) => {
-  //     if (pageWidth) {
-  //       handlePageScale(
-  //         event[0].contentBoxSize[0].inlineSize,
-  //         event[0].contentBoxSize[0].blockSize
-  //       );
-  //     }
-  //   });
-
-  //   if (pageContainerRef) resizeObserver.observe(pageContainerRef.current);
-  // }, [pageContainerRef, pageWidth]);
-
-  // useEffect(() => {
-  //   if (!pageWidth || !pageContainerRef?.current) return;
-
-  //   console.log(
-  //     pageWidth,
-  //     pageContainerRef.current.clientWidth,
-  //     pageContainerRef.current.clientHeight
-  //   );
-  //   handlePageScale(
-  //     pageContainerRef.current.clientWidth,
-  //     pageContainerRef.current.clientHeight
-  //   );
-  // }, [pageWidth]);
-
-  // function onHandlePageNumber(num) {
-  //   if (num === 0 || num > totalPages) return;
-  //   setCurrentPage(num);
-  //   curPage(num);
-  // }
 
   function onDocumentLoadSuccess({ numPages }) {
     console.log(
@@ -187,9 +143,57 @@ export default function PdfViewer({
     // console.log("[PDF] :: W/H", page.originalWidth, page.originalHeight, x, y);
   }
 
-  function onSliderChange(swiper) {
-    // console.log("[onSliderChange] :: ", swiper);
+  function onSliderChange(swp) {
+    console.log("[onSliderChange] :: ", swp.activeIndex);
+    setSwiper(swp);
+    setCurrentPage(swp.activeIndex);
   }
+
+  const naviateNextPageIfAllMarked = useCallback(() => {
+    const i = swiper.activeIndex;
+    let isAllDrawn = true;
+    if (!tabs)
+      return;
+    if (tabs[i].initial?.drawn === false) 
+      isAllDrawn = false;
+    else if (tabs[i].sig?.drawn === false) 
+      isAllDrawn = false;
+    console.log("[Timeout] :: ", isAllDrawn, tabs[i]);
+    if (isAllDrawn === true) {
+      const nextSlide = swiper.activeIndex + 1;
+      if (nextSlide < totalPages)
+        swiper.slideTo(nextSlide);
+    }
+  }, [tabs]);
+
+  useEffect(() => {
+    if (!tabs || !swiper)
+      return;
+    const i = swiper.activeIndex;
+    let isAllDrawn = true;
+    if (tabs[i].initial?.drawn === false) 
+      isAllDrawn = false;
+    else if (tabs[i].sig?.drawn === false) 
+      isAllDrawn = false;
+    console.log("[Timeout] :: ", isAllDrawn, tabs[i]);
+    if (isAllDrawn === true) {
+      const nextSlide = swiper.activeIndex + 1;
+      if (nextSlide < totalPages)
+        swiper.slideTo(nextSlide);
+    }
+  }, [count]);
+
+  async function onTabClick(pn, type) {
+    console.log(`++++++++ :: onTabClick(${pn}) ${type}`);
+    if (!drawData?.initial?.url) {
+      console.log(`You have to setup before doing this.`);
+      return;
+    }
+    dispatch(drawTab({index: pn, type: type}));
+    // setTimeout(naviateNextPageIfAllMarked, 2000);
+    setTimeout(()=> setCount(c => c + 1), 2000);
+  }
+
   return (
     <Grid
       container
@@ -211,6 +215,7 @@ export default function PdfViewer({
               mousewheel={true}
               direction={"vertical"}
               onSlideChange={onSliderChange}
+              onSwiper = {(swp) => setSwiper(swp)}
               pagination={{ clickable: true }}
               style={{ height: pageContainerRef.current.clientHeight }}
             >
@@ -235,7 +240,7 @@ export default function PdfViewer({
 												image = {drawData?.initial.url}
 												width = {drawData?.initial.width}
 												height = {drawData?.initial.height}
-                        onClick={() => onInitialTabClick(i)}
+                        onClick={() => onTabClick(i, "initial")}
                       />
                     ) : (
                       <></>
@@ -249,7 +254,7 @@ export default function PdfViewer({
 												width = {drawData?.sig.width}
 												height = {drawData?.sig.height}
 												color="dodgerblue"
-                        onClick={() => onSignatureTabClick(i)}
+                        onClick={() => onTabClick(i, "signature")}
                       />
                     ) : (
                       <></>

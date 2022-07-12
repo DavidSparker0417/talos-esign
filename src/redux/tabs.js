@@ -14,7 +14,7 @@ const tabsSlice = createSlice({
       },
       sig: {
         width: 64,
-        height: 24,
+        height: 20,
         url: undefined
       },
     },

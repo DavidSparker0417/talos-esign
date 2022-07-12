@@ -1,3 +1,4 @@
+import "./custom.css";
 import { createTheme } from '@mui/material';
 import pxToRem from "./functions/pxToRem";
 import rgba from "./functions/rgba";
