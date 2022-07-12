@@ -17,6 +17,11 @@ const tabsSlice = createSlice({
         height: 20,
         url: undefined
       },
+      date: {
+        width: 64,
+        height: 20,
+        text: undefined
+      },
     },
     editFinished: false,
   },
@@ -29,9 +34,10 @@ const tabsSlice = createSlice({
       state.pages = Array(p.pageCount).fill({});
     },
     setDrawData(state, action) {
-      console.log("[REDUX] setDrawData :: ", action.payload);
       state.drawData.initial.url = action.payload.initial;
       state.drawData.sig.url = action.payload.sig;
+      state.drawData.date.text = action.payload.date;
+      console.log("[REDUX] setDrawData :: ", action.payload);
     },
     setTab(state, action) {
       const p = action.payload;
@@ -48,6 +54,12 @@ const tabsSlice = createSlice({
         state.pages[i].sig.pos = p.data.sig;
         state.pages[i].sig.drawn = false;
       }
+      if (p.data.date) {
+        if (!state.pages[i].date)
+          state.pages[i].date = {};
+        state.pages[i].date.pos = p.data.date;
+        state.pages[i].date.drawn = false;
+      }
       state.editFinished = false;
       console.log("[REDUX] setTab :: ", p);
     },
@@ -60,11 +72,14 @@ const tabsSlice = createSlice({
         state.pages[i].initial.drawn = true;
       else if (type === "signature")
         state.pages[i].sig.drawn = true;
+      else if (type === "date")
+        state.pages[i].date.drawn = true;
       
       let finished = true;
       for(const j in state.pages) {
         if (state.pages[j].initial?.drawn === false ||
-            state.pages[j].sig?.drawn === false)
+            state.pages[j].sig?.drawn === false ||
+            state.pages[j].date?.drawn === false)
         {
           finished = false;
           break;

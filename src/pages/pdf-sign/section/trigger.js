@@ -39,6 +39,17 @@ export default function TriggerPanel({onSetting}) {
           height: drawData.sig.height,
         });
       }
+      if (pages[i].date) {
+        const pos = pages[i].date.pos;
+        const y = curPage.getHeight() - pos.py - drawData.date.height/2;
+        curPage.drawText(drawData.date.text, {
+          size: 16,
+          x: pos.px,
+          y: y,
+          width: drawData.date.width,
+          height: drawData.date.height,
+        });
+      }
     }
 
     const pdfBytes = await pdfDoc.save();

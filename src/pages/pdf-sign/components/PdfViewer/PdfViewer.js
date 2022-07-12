@@ -18,45 +18,65 @@ import useStyles, { FreshingBanner } from "./styles";
 import { minWidth } from "@mui/system";
 import { convertMMtoPixel } from "../../helper";
 import { drawTab, setTab } from "../../../../redux/tabs";
+import getFormattedDate from "../../../../helpers/datetime";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
-function ESTab({ x, y, color, drawn, image, width, height, ...rest }) {
+function ESTab({
+  x,
+  y,
+  color,
+  drawn,
+  image,
+  datetime,
+  width,
+  height,
+  ...rest
+}) {
+  // const date = getFormattedDate(new Date());
+  // console.log("ESTAB : ", date, typeof date);
   return (
-		<>
-		{
-			(drawn && drawn === true )
-			? <Box 
-					component="img" 
-					src={image} 
-					width={width}
-					height={height}
-					sx = {{
-						position: "absolute",
-						left: `${x}px`,
-						top: `${y - height/2}px`,
-					}}
-				/>
-			: <FreshingBanner
-				{...rest}
-				sx={{
-					position: "absolute",
-					left: `${x}px`,
-					top: `${y - height/2}px`,
-					width: {width},
-					height: {height},
-				}}
-			/>
-		}
-		</>
+    <>
+      {drawn && drawn === true ? (
+        datetime ? (
+          <Typography
+            sx={{
+              position: "absolute",
+              left: `${x}px`,
+              top: `${y - height / 2}px`,
+            }}
+          >
+            {datetime}
+          </Typography>
+        ) : (
+          <Box
+            component="img"
+            src={image}
+            width={width}
+            height={height}
+            sx={{
+              position: "absolute",
+              left: `${x}px`,
+              top: `${y - height / 2}px`,
+            }}
+          />
+        )
+      ) : (
+        <FreshingBanner
+          {...rest}
+          sx={{
+            position: "absolute",
+            left: `${x}px`,
+            top: `${y - height / 2}px`,
+            width: { width },
+            height: { height },
+          }}
+        />
+      )}
+    </>
   );
 }
 
-export default function PdfViewer({
-  pdf,
-  curPage,
-  coordinates,
-  signer,
-}) {
+export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
   const pageContainerRef = useRef(null);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -64,8 +84,8 @@ export default function PdfViewer({
   const classes = useStyles({ pageHeight: "900px" });
   const [coord, setCoord] = useState();
   const dispatch = useDispatch();
-	const tabs = useSelector(state => state.tabs.pages);
-	const drawData = useSelector(state => state.tabs.drawData)
+  const tabs = useSelector((state) => state.tabs.pages);
+  const drawData = useSelector((state) => state.tabs.drawData);
   const [swiper, setSwiper] = useState();
   const [count, setCount] = useState(0);
 
@@ -91,31 +111,39 @@ export default function PdfViewer({
   }
 
   function setCoordinateParams(pageIndex, page) {
-    const pOrgInitPos = coord.pages[pageIndex]?.initialCoordinates[0];
-    console.log("Initial pos = ", pOrgInitPos);
-
     const scaleW = pageContainerRef.current.clientWidth / page.originalWidth;
     const scaleH = pageContainerRef.current.clientHeight / page.originalHeight;
+
+    const pOrgInitPos = coord.pages[pageIndex]?.initialCoordinates[0];
+    console.log("Initial pos = ", pOrgInitPos);
     const initialRPos = convertMMtoPixel(pOrgInitPos, scaleW, scaleH);
 
     const pOrgSignPos = coord.pages[pageIndex]?.signatureCoordinates[0];
     console.log("Signature pos = ", pOrgSignPos);
     const sigPos = convertMMtoPixel(pOrgSignPos, scaleW, scaleH);
 
+    const pOrgDatePos = coord.pages[pageIndex]?.dateCoordinates[0];
+    console.log("Date pos = ", pOrgDatePos);
+    const datePos = convertMMtoPixel(pOrgDatePos, scaleW, scaleH);
+
     let payload = {};
     payload.index = pageIndex;
-		let pdata = {};
-		pdata.width = page.originalWidth;
-		pdata.height = page.originalHeight;
+    let pdata = {};
+    pdata.width = page.originalWidth;
+    pdata.height = page.originalHeight;
     if (initialRPos)
-			pdata.initial = {
-					...initialRPos
-				};
+      pdata.initial = {
+        ...initialRPos,
+      };
     if (sigPos)
-			pdata.sig = {
-					...sigPos
-				};
-		payload.data = pdata;
+      pdata.sig = {
+        ...sigPos,
+      };
+    if (datePos)
+      pdata.date = {
+        ...datePos,
+      };
+    payload.data = pdata;
     dispatch(setTab(payload));
   }
 
@@ -149,37 +177,17 @@ export default function PdfViewer({
     setCurrentPage(swp.activeIndex);
   }
 
-  const naviateNextPageIfAllMarked = useCallback(() => {
-    const i = swiper.activeIndex;
-    let isAllDrawn = true;
-    if (!tabs)
-      return;
-    if (tabs[i].initial?.drawn === false) 
-      isAllDrawn = false;
-    else if (tabs[i].sig?.drawn === false) 
-      isAllDrawn = false;
-    console.log("[Timeout] :: ", isAllDrawn, tabs[i]);
-    if (isAllDrawn === true) {
-      const nextSlide = swiper.activeIndex + 1;
-      if (nextSlide < totalPages)
-        swiper.slideTo(nextSlide);
-    }
-  }, [tabs]);
-
   useEffect(() => {
-    if (!tabs || !swiper)
-      return;
+    if (!tabs || !swiper) return;
     const i = swiper.activeIndex;
     let isAllDrawn = true;
-    if (tabs[i].initial?.drawn === false) 
-      isAllDrawn = false;
-    else if (tabs[i].sig?.drawn === false) 
-      isAllDrawn = false;
+    if (tabs[i].initial?.drawn === false) isAllDrawn = false;
+    else if (tabs[i].sig?.drawn === false) isAllDrawn = false;
+    else if (tabs[i].date?.drawn === false) isAllDrawn = false;
     console.log("[Timeout] :: ", isAllDrawn, tabs[i]);
     if (isAllDrawn === true) {
       const nextSlide = swiper.activeIndex + 1;
-      if (nextSlide < totalPages)
-        swiper.slideTo(nextSlide);
+      if (nextSlide < totalPages) swiper.slideTo(nextSlide);
     }
   }, [count]);
 
@@ -189,9 +197,9 @@ export default function PdfViewer({
       console.log(`You have to setup before doing this.`);
       return;
     }
-    dispatch(drawTab({index: pn, type: type}));
+    dispatch(drawTab({ index: pn, type: type }));
     // setTimeout(naviateNextPageIfAllMarked, 2000);
-    setTimeout(()=> setCount(c => c + 1), 2000);
+    setTimeout(() => setCount((c) => c + 1), 2000);
   }
 
   return (
@@ -215,7 +223,7 @@ export default function PdfViewer({
               mousewheel={true}
               direction={"vertical"}
               onSlideChange={onSliderChange}
-              onSwiper = {(swp) => setSwiper(swp)}
+              onSwiper={(swp) => setSwiper(swp)}
               pagination={{ clickable: true }}
               style={{ height: pageContainerRef.current.clientHeight }}
             >
@@ -232,29 +240,42 @@ export default function PdfViewer({
                       onLoadSuccess={onLoadSuccess}
                       onRenderSuccess={onRenderSuccess}
                     />
-										{tabs && tabs[i]?.initial ? (
+                    {tabs && tabs[i]?.initial ? (
                       <ESTab
                         x={tabs[i].initial.pos.x}
                         y={tabs[i].initial.pos.y}
-												drawn = {tabs[i].initial.drawn}
-												image = {drawData?.initial.url}
-												width = {drawData?.initial.width}
-												height = {drawData?.initial.height}
+                        drawn={tabs[i].initial.drawn}
+                        image={drawData?.initial.url}
+                        width={drawData?.initial.width}
+                        height={drawData?.initial.height}
                         onClick={() => onTabClick(i, "initial")}
                       />
                     ) : (
                       <></>
                     )}
-										{tabs && tabs[i]?.sig ? (
+                    {tabs && tabs[i]?.sig ? (
                       <ESTab
                         x={tabs[i].sig.pos.x}
                         y={tabs[i].sig.pos.y}
-												drawn = {tabs[i].sig.drawn}
-												image = {drawData?.sig.url}
-												width = {drawData?.sig.width}
-												height = {drawData?.sig.height}
-												color="dodgerblue"
+                        drawn={tabs[i].sig.drawn}
+                        image={drawData?.sig.url}
+                        width={drawData?.sig.width}
+                        height={drawData?.sig.height}
+                        color="dodgerblue"
                         onClick={() => onTabClick(i, "signature")}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                    {tabs && tabs[i]?.date ? (
+                      <ESTab
+                        x={tabs[i].date.pos.x}
+                        y={tabs[i].date.pos.y}
+                        drawn={tabs[i].date.drawn}
+                        datetime={drawData?.date.text}
+                        width={drawData?.date.width}
+                        height={drawData?.date.height}
+                        onClick={() => onTabClick(i, "date")}
                       />
                     ) : (
                       <></>
@@ -267,12 +288,16 @@ export default function PdfViewer({
       </Box>
       <Grid container alignItems="center" justifyContent="space-between">
         <Grid item xs={6} paddingLeft="16px" overflow="hidden">
-          <Typography component="span" fontSize="14px">{pdf?.filename}</Typography>
-          <Typography component="span" fontFamily="Mr Dafoe">&nbsp;</Typography>
+          <Typography component="span" fontSize="14px">
+            {pdf?.filename}
+          </Typography>
+          <Typography component="span" fontFamily="Mr Dafoe">
+            &nbsp;
+          </Typography>
         </Grid>
         <Grid item xs={6} paddingRight="16px" justifyContent="end">
           <Typography fontSize="14px" style={{ textAlign: "end" }}>
-            Page {currentPage+1}-{totalPages}{" "}
+            Page {currentPage + 1}-{totalPages}{" "}
           </Typography>
         </Grid>
       </Grid>

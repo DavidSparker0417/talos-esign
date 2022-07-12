@@ -12,6 +12,7 @@ import { arrayBufferToBase64, b64toBytes } from "../../helper";
 import SignaturePad from "react-signature-pad-wrapper";
 import { useUI } from "../../../../context/ui";
 import SignerNamePanel, { ChooseStyle, DrawPanel, FinishSettings } from "./sections";
+import getFormattedDate from "../../../../helpers/datetime";
 
 function getAbbrName(name) {
   if (!name) return "";
@@ -163,7 +164,8 @@ export default function SignPadV2({ pdfBuffer, page, signer, update, close, setu
     );
     setup({
       sig: sigImageUrl,
-      initial: initialImageUrl
+      initial: initialImageUrl,
+      date: getFormattedDate(new Date())
     });
     closeBtn();
   }
