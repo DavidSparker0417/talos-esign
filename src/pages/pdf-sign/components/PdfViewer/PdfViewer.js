@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
 import { pdfjs } from "react-pdf";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper";
+import { FreeMode, Pagination, Scrollbar, Mousewheel } from "swiper";
 // styles
 import useStyles from "./styles";
 import { minWidth } from "@mui/system";
@@ -207,12 +207,11 @@ export default function PdfViewer({
         {pdf && (
           <Document file={pdf.url} onLoadSuccess={onDocumentLoadSuccess}>
             <Swiper
+              modules={[Pagination, Mousewheel]}
+              mousewheel={true}
               direction={"vertical"}
               onSlideChange={onSliderChange}
-              pagination={{
-                clickable: true,
-              }}
-              modules={[Pagination]}
+              pagination={{ clickable: true }}
               style={{ height: pageContainerRef.current.clientHeight }}
             >
               {Array(totalPages)
