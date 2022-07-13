@@ -88,6 +88,7 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
   const drawData = useSelector((state) => state.tabs.drawData);
   const [swiper, setSwiper] = useState();
   const [count, setCount] = useState(0);
+  const [tabClickTimer, setTabClickTimer] = useState();
 
   useEffect(() => {
     if (!signer || !coordinates) return;
@@ -177,17 +178,31 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
     setCurrentPage(swp.activeIndex);
   }
 
+  function checkIfAllTabsClicked(pn) {
+    let isAllDrawn = true;
+    if (tabs[pn].initial?.drawn === false) isAllDrawn = false;
+    else if (tabs[pn].sig?.drawn === false) isAllDrawn = false;
+    else if (tabs[pn].date?.drawn === false) isAllDrawn = false;
+    return isAllDrawn;
+  }
+
   useEffect(() => {
     if (!tabs || !swiper) return;
-    const i = swiper.activeIndex;
-    let isAllDrawn = true;
-    if (tabs[i].initial?.drawn === false) isAllDrawn = false;
-    else if (tabs[i].sig?.drawn === false) isAllDrawn = false;
-    else if (tabs[i].date?.drawn === false) isAllDrawn = false;
-    console.log("[Timeout] :: ", isAllDrawn, tabs[i]);
-    if (isAllDrawn === true) {
-      const nextSlide = swiper.activeIndex + 1;
-      if (nextSlide < totalPages) swiper.slideTo(nextSlide);
+    const curPn = swiper.activeIndex;
+    if (checkIfAllTabsClicked(curPn) === false)
+      return;
+    for(let i = curPn+1; i < totalPages; i ++) {
+      if (checkIfAllTabsClicked(i) === false) {
+        swiper.slideTo(i);
+        return;
+      }
+    }
+    if (curPn === 0) return;
+    for(let i = curPn-1; i >= 0; i --) {
+      if (checkIfAllTabsClicked(i) === false) {
+        swiper.slideTo(i);
+        return;
+      }
     }
   }, [count]);
 
@@ -199,7 +214,10 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
     }
     dispatch(drawTab({ index: pn, type: type }));
     // setTimeout(naviateNextPageIfAllMarked, 2000);
-    setTimeout(() => setCount((c) => c + 1), 2000);
+    console.log("--- ", tabClickTimer);
+    if (tabClickTimer)
+      clearTimeout(tabClickTimer);
+    setTabClickTimer(setTimeout(() => setCount((c) => c + 1), 2000));
   }
 
   return (

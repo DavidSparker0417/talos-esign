@@ -25,7 +25,7 @@ function getAbbrName(name) {
   return abrName;
 }
 
-export default function SignPadV2({ pdfBuffer, page, signer, update, close, setup }) {
+export default function SignPadV2({ signer, close, setup, ...rest }) {
   const [type, setType] = useState(0);
   const [signText, setSignText] = useState();
   const signRef = useRef();
@@ -176,7 +176,7 @@ export default function SignPadV2({ pdfBuffer, page, signer, update, close, setu
       wrap="nowrap"
       flexDirection="column"
       position="relative"
-      height="100%"
+      {...rest}
     >
       <CloseButton onClick={closeBtn} />
       <SignerNamePanel 
