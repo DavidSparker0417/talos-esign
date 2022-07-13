@@ -42,7 +42,7 @@ function ESTab({
             sx={{
               position: "absolute",
               left: `${x}px`,
-              top: `${y - height / 2}px`,
+              top: `${y - height / 1.5}px`,
             }}
           >
             {datetime}
@@ -56,7 +56,7 @@ function ESTab({
             sx={{
               position: "absolute",
               left: `${x}px`,
-              top: `${y - height / 2}px`,
+              top: `${y - height / 1.5}px`,
             }}
           />
         )
@@ -66,7 +66,7 @@ function ESTab({
           sx={{
             position: "absolute",
             left: `${x}px`,
-            top: `${y - height / 2}px`,
+            top: `${y - height / 2.5}px`,
             width: { width },
             height: { height },
           }}

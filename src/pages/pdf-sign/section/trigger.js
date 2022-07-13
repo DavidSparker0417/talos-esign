@@ -31,7 +31,7 @@ export default function TriggerPanel({onSetting}) {
       }
       if (pages[i].sig) {
         const pos = pages[i].sig.pos;
-        const y = curPage.getHeight() - pos.py - drawData.sig.height/2;
+        const y = curPage.getHeight() - pos.py - drawData.sig.height/3;
         curPage.drawImage(sigPng, {
           x: pos.px,
           y: y,
@@ -41,7 +41,7 @@ export default function TriggerPanel({onSetting}) {
       }
       if (pages[i].date) {
         const pos = pages[i].date.pos;
-        const y = curPage.getHeight() - pos.py - drawData.date.height/2;
+        const y = curPage.getHeight() - pos.py - drawData.date.height/3;
         curPage.drawText(drawData.date.text, {
           size: 16,
           x: pos.px,
