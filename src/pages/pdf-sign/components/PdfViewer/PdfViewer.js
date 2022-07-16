@@ -86,6 +86,7 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.tabs.pages);
   const drawData = useSelector((state) => state.tabs.drawData);
+  const { setupComplete, signFinished, signDate } = useSelector((state) => state.tabs);
   const [swiper, setSwiper] = useState();
   const [count, setCount] = useState(0);
   const [tabClickTimer, setTabClickTimer] = useState();
@@ -182,23 +183,22 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
     let isAllDrawn = true;
     if (tabs[pn].initial?.drawn === false) isAllDrawn = false;
     else if (tabs[pn].sig?.drawn === false) isAllDrawn = false;
-    else if (tabs[pn].date?.drawn === false) isAllDrawn = false;
+    // else if (tabs[pn].date?.drawn === false) isAllDrawn = false;
     return isAllDrawn;
   }
 
   useEffect(() => {
     if (!tabs || !swiper) return;
     const curPn = swiper.activeIndex;
-    if (checkIfAllTabsClicked(curPn) === false)
-      return;
-    for(let i = curPn+1; i < totalPages; i ++) {
+    if (checkIfAllTabsClicked(curPn) === false) return;
+    for (let i = curPn + 1; i < totalPages; i++) {
       if (checkIfAllTabsClicked(i) === false) {
         swiper.slideTo(i);
         return;
       }
     }
     if (curPn === 0) return;
-    for(let i = curPn-1; i >= 0; i --) {
+    for (let i = curPn - 1; i >= 0; i--) {
       if (checkIfAllTabsClicked(i) === false) {
         swiper.slideTo(i);
         return;
@@ -214,10 +214,8 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
     }
     dispatch(drawTab({ index: pn, type: type }));
     // setTimeout(naviateNextPageIfAllMarked, 2000);
-    console.log("--- ", tabClickTimer);
-    if (tabClickTimer)
-      clearTimeout(tabClickTimer);
-    setTabClickTimer(setTimeout(() => setCount((c) => c + 1), 2000));
+    if (tabClickTimer) clearTimeout(tabClickTimer);
+    setTabClickTimer(setTimeout(() => setCount((c) => c + 1), 1000));
   }
 
   return (
@@ -258,45 +256,49 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
                       onLoadSuccess={onLoadSuccess}
                       onRenderSuccess={onRenderSuccess}
                     />
-                    {tabs && tabs[i]?.initial ? (
-                      <ESTab
-                        x={tabs[i].initial.pos.x}
-                        y={tabs[i].initial.pos.y}
-                        drawn={tabs[i].initial.drawn}
-                        image={drawData?.initial.url}
-                        width={drawData?.initial.width}
-                        height={drawData?.initial.height}
-                        onClick={() => onTabClick(i, "initial")}
-                      />
-                    ) : (
-                      <></>
-                    )}
-                    {tabs && tabs[i]?.sig ? (
-                      <ESTab
-                        x={tabs[i].sig.pos.x}
-                        y={tabs[i].sig.pos.y}
-                        drawn={tabs[i].sig.drawn}
-                        image={drawData?.sig.url}
-                        width={drawData?.sig.width}
-                        height={drawData?.sig.height}
-                        color="dodgerblue"
-                        onClick={() => onTabClick(i, "signature")}
-                      />
-                    ) : (
-                      <></>
-                    )}
-                    {tabs && tabs[i]?.date ? (
-                      <ESTab
-                        x={tabs[i].date.pos.x}
-                        y={tabs[i].date.pos.y}
-                        drawn={tabs[i].date.drawn}
-                        datetime={drawData?.date.text}
-                        width={drawData?.date.width}
-                        height={drawData?.date.height}
-                        onClick={() => onTabClick(i, "date")}
-                      />
-                    ) : (
-                      <></>
+                    {setupComplete == true && (
+                      <Box>
+                        {tabs && tabs[i]?.initial ? (
+                          <ESTab
+                            x={tabs[i].initial.pos.x}
+                            y={tabs[i].initial.pos.y}
+                            drawn={tabs[i].initial.drawn}
+                            image={drawData?.initial.url}
+                            width={drawData?.initial.width}
+                            height={drawData?.initial.height}
+                            onClick={() => onTabClick(i, "initial")}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                        {tabs && tabs[i]?.sig ? (
+                          <ESTab
+                            x={tabs[i].sig.pos.x}
+                            y={tabs[i].sig.pos.y}
+                            drawn={tabs[i].sig.drawn}
+                            image={drawData?.sig.url}
+                            width={drawData?.sig.width}
+                            height={drawData?.sig.height}
+                            color="dodgerblue"
+                            onClick={() => onTabClick(i, "signature")}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                        {signFinished === true && tabs && tabs[i]?.date ? (
+                          <ESTab
+                            x={tabs[i].date.pos.x}
+                            y={tabs[i].date.pos.y}
+                            drawn={true}
+                            datetime={signDate}
+                            width={drawData?.date.width}
+                            height={drawData?.date.height}
+                            onClick={() => onTabClick(i, "date")}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </Box>
                     )}
                   </SwiperSlide>
                 ))}

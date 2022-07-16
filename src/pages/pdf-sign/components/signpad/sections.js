@@ -41,7 +41,7 @@ function NameBox({ label, value, setValue, ...rest }) {
         }}
         InputProps = {{
           style : {
-            fontSize: "3vw"
+            fontSize: "2vw"
           }
         }}
       />
@@ -113,6 +113,7 @@ export function ChooseStyle({ onStyleChange, ...rest }) {
         value = {editType}
         onChange = {handleChange}
         fullWidth
+        sx={{maxHeight:"5vh"}}
       >
         <DSToggleButton 
           value="text" 
@@ -154,7 +155,7 @@ export function ChooseStyle({ onStyleChange, ...rest }) {
   );
 }
 
-const FingerDrawPanel = forwardRef(({ type, title }, ref) => {
+const FingerDrawPanel = forwardRef(({ type, title, ...rest }, ref) => {
   useEffect(() => {
     if (type == 1) {
       ref.current.off();
@@ -164,7 +165,7 @@ const FingerDrawPanel = forwardRef(({ type, title }, ref) => {
   }, [type, ref]);
 
   return (
-    <DSBox border="solid 2px" borderColor="border">
+    <DSBox border="solid 2px" borderColor="border" height= "25vh">
       <Typography backgroundColor="yellow">{title}</Typography>
       <SignaturePad
         dotSize={2}
@@ -173,7 +174,7 @@ const FingerDrawPanel = forwardRef(({ type, title }, ref) => {
         canvasProps={{
           style: {
             width: "100%",
-            height: "150px",
+            height: "21vh",
           },
         }}
         ref={ref}
@@ -270,27 +271,27 @@ function ChangeFonts({ name, onChangeFont }) {
     </Box>
   );
 }
-export const DrawPanel = forwardRef((props, ref) => {
+export const DrawPanel = forwardRef(({type, name, abrName, ...rest}, ref) => {
   const { signRef, initialRef } = ref;
   const [activeFont, setActiveFont] = useState();
 
   function drawBySystemFont() {
-    if (props.type !== 1) return;
+    if (type !== 1) return;
     clearSign();
     console.log("drawBySystemFont :: ", activeFont);
     let ctx = signRef?.current?.getCanvas()?.getContext("2d");
     ctx.font = `48px ${activeFont}`;
-    ctx.fillText(props.name, 10, 50);
+    ctx.fillText(name, 10, 50);
 
     ctx = initialRef?.current?.getCanvas()?.getContext("2d");
     ctx.font = `48px ${activeFont}`;
-    ctx.fillText(props.abrName, 10, 50);
+    ctx.fillText(abrName, 10, 50);
   }
 
   useEffect(() => {
     clearSign();
     drawBySystemFont();
-  }, [props.type, activeFont, props.name, props.abrName]);
+  }, [type, activeFont, name, abrName]);
 
   function clearSign() {
     // setSignText("");
@@ -299,33 +300,34 @@ export const DrawPanel = forwardRef((props, ref) => {
   }
 
   return (
-    <Grid container wrap="nowrap" flexDirection="column" px={1}>
+    <Grid container wrap="nowrap" flexDirection="column" px={1} {...rest}>
       <Grid
         item
         mt={2}
         container
         justifyContent="space-between"
         alignItems="center"
+        maxHeight="5vh"
       >
-        <DSTypography fontSize="1.5rem" color="border">
+        <DSTypography fontSize={{sm:"1.5rem", xs:"1rem"}} color="border">
           Preview
         </DSTypography>
         <Button
           variant="text"
           color="primary"
-          onClick={props.type === 0 ? clearSign : () => {}}
+          onClick={type === 0 ? clearSign : () => {}}
         >
           Clear
         </Button>
       </Grid>
-      <Box>
-        <FingerDrawPanel title="Signature" type={props.type} ref={signRef} />
-        <FingerDrawPanel title="Initial" type={props.type} ref={initialRef} />
-        {props.type === 1 && (
-          <ChangeFonts name={props.name} onChangeFont={setActiveFont} />
+      <Box maxHeight="60vh" overflow="hidden">
+        <FingerDrawPanel title="Signature" type={type} ref={signRef} />
+        <FingerDrawPanel title="Initial" type={type} ref={initialRef} />
+        {type === 1 && (
+          <ChangeFonts name={name} onChangeFont={setActiveFont} />
         )}
       </Box>
-      <Typography mt={1} fontSize={{ xs: "10px", sm: "16px" }}>
+      <Typography mt={1} fontSize={{ xs: "10px", sm: "16px" }} maxHeigh="10vh" overflow="hidden">
         By selecting Adopt and Sign, I agree that the signature and initals will
         be my electronic representation of my Signature and Initials for all
         purposes within these documents. When I, my agent, or my representative
@@ -337,9 +339,9 @@ export const DrawPanel = forwardRef((props, ref) => {
   );
 });
 
-export function FinishSettings({ onSign, onCancel }) {
+export function FinishSettings({ onSign, onCancel, ...rest }) {
   return (
-    <div style={{ display: "flex", height: "40px" }}>
+    <Grid container {...rest}>
       <DSButton
         onClick={onSign}
         sx={{
@@ -360,6 +362,6 @@ export function FinishSettings({ onSign, onCancel }) {
       >
         Cancel
       </DSButton>
-    </div>
+    </Grid>
   );
 }

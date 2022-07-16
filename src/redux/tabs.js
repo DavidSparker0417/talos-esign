@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import getFormattedDate from "../helpers/datetime";
 
 const tabsSlice = createSlice({
   name: "PDF",
@@ -24,6 +25,9 @@ const tabsSlice = createSlice({
       },
     },
     editFinished: false,
+    setupComplete: false,
+    signFinished: false,
+    signDate: "",
   },
   reducers: {
     pdfLoad(state, action) {
@@ -38,6 +42,7 @@ const tabsSlice = createSlice({
       state.drawData.sig.url = action.payload.sig;
       state.drawData.date.text = action.payload.date;
       console.log("[REDUX] setDrawData :: ", action.payload);
+      state.setupComplete = true;
     },
     setTab(state, action) {
       const p = action.payload;
@@ -78,8 +83,7 @@ const tabsSlice = createSlice({
       let finished = true;
       for(const j in state.pages) {
         if (state.pages[j].initial?.drawn === false ||
-            state.pages[j].sig?.drawn === false ||
-            state.pages[j].date?.drawn === false)
+            state.pages[j].sig?.drawn === false)
         {
           finished = false;
           break;
@@ -87,9 +91,13 @@ const tabsSlice = createSlice({
       }
       if(finished === true)
         state.editFinished = true;
+    },
+    doSign(state, action) {
+      state.signFinished = true;
+      state.signDate = action.payload;
     }
   }
 });
 
-export const {setTab, drawTab, setDrawData, pdfLoad} = tabsSlice.actions;
+export const {setTab, drawTab, setDrawData, pdfLoad, doSign} = tabsSlice.actions;
 export default tabsSlice.reducer;

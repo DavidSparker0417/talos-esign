@@ -178,7 +178,7 @@ export default function SignPadV2({ signer, close, setup, ...rest }) {
       position="relative"
       {...rest}
     >
-      <CloseButton onClick={closeBtn} />
+      <CloseButton onClick={closeBtn} sx={{maxHeight:"4vh"}}/>
       <SignerNamePanel 
         name={name}
         setName={setName}
@@ -186,18 +186,31 @@ export default function SignPadV2({ signer, close, setup, ...rest }) {
         setAbrName={setAbrName}
         mb={3}
         px={1}
+        maxHeight="8vh"
       />
-      <ChooseStyle onStyleChange={(t) => setType(t)} px={1}/>
+      <ChooseStyle 
+        onStyleChange={(t) => setType(t)} 
+        px={1} 
+        maxHeight="5vh"
+      />
       <DrawPanel 
         type={type} 
         name={name}
         abrName={abrName}
+        maxHeight="75vh"
         ref={{
           signRef,
           initialRef
         }}/>
       <div style={{ flex: 1 }}></div>
-      <FinishSettings onSign={onSign} onCancel={closeBtn}/>
+      <FinishSettings 
+        onSign={onSign} 
+        onCancel={closeBtn} 
+        maxHeight="5vh" 
+        position="absolute"
+        left="0px"
+        bottom="0px"
+      />
     </Grid>
   );
 }

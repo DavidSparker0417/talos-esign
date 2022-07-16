@@ -65,11 +65,6 @@ export default function TriggerPanel({onSetting}) {
       <DSButton onClick={onSetting}>
         Settings
       </DSButton>
-      {editFinished === true && (
-        <DSButton onClick={onSign}>
-          Sign!
-        </DSButton>
-      )}
     </Grid>
   );
 }

@@ -10,9 +10,10 @@ import testPayload from "./payload.json";
 import coorinates from "./coordinates.json";
 import { b64toBytes, getCoordFromSigner, trimFileName } from "./helper";
 import SignPadV2 from "./components/signpad/signpad-hook";
-import { drawTab, pdfLoad, setDrawData } from "../../redux/tabs";
+import { doSign, pdfLoad, setDrawData } from "../../redux/tabs";
 import TriggerPanel from "./section/trigger";
-import { fontList } from "./components/signpad/sections";
+import DSButton from "../../components/DSButton";
+import getFormattedDate from "../../helpers/datetime";
 
 export default function PdfSign() {
   const [pdf, setPdf] = useState();
@@ -20,9 +21,13 @@ export default function PdfSign() {
   const [togglePad, setTogglePad] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [signer, setSigner] = useState();
-  const [coord, setCoord] = useState();
-  const tabs = useSelector((state) => state.tabs.pages);
-  const setting = useSelector((state) => state.tabs.drawData);
+  const {
+    pdfBuffer: resultPdfBuffer,
+    pages,
+    editFinished, 
+    drawData
+  } = useSelector((state) => state.tabs);
+  const [toggleSign, setToggleSign] = useState(false);
   const dispatch = useDispatch();
 
   const doc = testPayload.documents[0];
@@ -32,11 +37,14 @@ export default function PdfSign() {
     const signers = testPayload?.recipients?.signers;
     const s = signers.find((s) => s.recipientId === parseInt(id));
     setSigner(s);
-    const c = getCoordFromSigner(s, coorinates);
-    setCoord(c);
     setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
     setPdfBuffer(originalPdfBuffer);
   }, []);
+
+  useEffect(() => {
+    if(editFinished === true)
+      setToggleSign(true);
+  }, [editFinished]);
 
   useEffect(() => {
     if (!pdfBuffer) return;
@@ -61,6 +69,59 @@ export default function PdfSign() {
     setTogglePad(!togglePad);
   }
 
+  async function onSign() {
+    const pdfDoc = await PDFDocument.load(resultPdfBuffer);
+    console.log("++++++++++ :: siging :: ", pdfDoc);
+    const initialPng = await pdfDoc.embedPng(drawData.initial.url);
+    const sigPng = await pdfDoc.embedPng(drawData.sig.url);
+    const signDate = getFormattedDate(new Date());
+    for(const i in pages) {
+      console.log(pages[i]);
+      const curPage = pdfDoc.getPages()[i];
+      if (pages[i].initial) {
+        const pos = pages[i].initial.pos;
+        const y = curPage.getHeight() - pos.py - drawData.initial.height/2;
+        curPage.drawImage(initialPng, {
+          x: pos.px,
+          y: y,
+          width: drawData.initial.width,
+          height: drawData.initial.height,
+        });
+      }
+      if (pages[i].sig) {
+        const pos = pages[i].sig.pos;
+        const y = curPage.getHeight() - pos.py - drawData.sig.height/3;
+        curPage.drawImage(sigPng, {
+          x: pos.px,
+          y: y,
+          width: drawData.sig.width,
+          height: drawData.sig.height,
+        });
+      }
+      if (pages[i].date) {
+        const pos = pages[i].date.pos;
+        const y = curPage.getHeight() - pos.py - drawData.date.height/3;
+        curPage.drawText(signDate, {
+          size: 16,
+          x: pos.px,
+          y: y,
+          width: drawData.date.width,
+          height: drawData.date.height,
+        });
+      }
+      setToggleSign(false);
+      dispatch(doSign(signDate));
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    const bytes = new Uint8Array(pdfBytes);
+    const blob =  new Blob([bytes], {type: "application/pdf"});
+    let link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = "signed.pdf";
+    link.click();
+  }
+
   return (
     <Grid container direction="column" wrap="nowrap" height="100%">
       <TriggerPanel onSetting={onSetting} />
@@ -73,9 +134,6 @@ export default function PdfSign() {
       <Modal 
         open={togglePad} 
         onClose={() => setTogglePad(false)}
-        sx={{
-          overflow:"scroll"
-        }}
       >
         <SignPadV2
           close={() => setTogglePad(false)}
@@ -87,30 +145,16 @@ export default function PdfSign() {
           }}
         />
       </Modal>
-      {/* {togglePad ? (
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            position: "fixed",
-            bottom: "0px",
-            left: "0px",
-            right: "0px",
-            backgroundColor: "white",
-          }}
-        >
-          <SignPadV2
-            pdfBuffer={originalPdfBuffer}
-            update={(buffer) => setPdfBuffer(buffer)}
-            close={() => setTogglePad(false)}
-            page={currentPage}
-            signer={signer}
-            setup = {setup}
-          />
-        </div>
-      ) : (
-        <></>
-      )} */}
+      <Modal
+        open={toggleSign}
+        onClose={() => setToggleSign(false)}
+      >
+        <Grid container justifyContent="center" alignItems="center" height="100%">
+          <DSButton sx={{height:"fit-content"}} onClick={onSign}>
+            SIGN!
+          </DSButton>
+        </Grid>
+      </Modal>
     </Grid>
   );
 }
