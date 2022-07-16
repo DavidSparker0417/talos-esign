@@ -206,7 +206,14 @@ export default function SignPadV2({ signer, close, setup, ...rest }) {
       <FinishSettings 
         onSign={onSign} 
         onCancel={closeBtn} 
-        maxHeight="5vh" 
+        maxHeight={{
+          xs: "5vh" ,
+          sm: "60px"
+        }}
+        height= {{
+          xs: "fit-content",
+          sm: "40px"
+        }}
         position="absolute"
         left="0px"
         bottom="0px"
