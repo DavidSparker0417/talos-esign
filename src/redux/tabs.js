@@ -1,10 +1,40 @@
-import { createSlice } from "@reduxjs/toolkit";
-import getFormattedDate from "../helpers/datetime";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { b64toBytes } from "../pages/pdf-sign/helper";
+import docsignService from "../service/docsign.service";
+import { PDFDocument } from "pdf-lib";
+
+export const getPayload = createAsyncThunk(
+  "app/doc-sign/req-payload",
+  async() => {
+    try {
+      const data = await docsignService.requestDoc();
+      const {payload, coordinates} = data;
+      console.log(payload);
+      const doc = payload.documents[0];
+      const pdfBuffer = b64toBytes(doc.documentBase64);
+      const d = await PDFDocument.load(pdfBuffer);
+      // state.pages = Array(state.pageCount).fill({});
+      // state.pdfBuffer = pdfBuffer;
+      return {
+        fileName: doc.name,
+        pdfBuffer: doc.documentBase64,
+        pageCount: d.getPageCount(),
+        signers: payload?.recipients?.signers
+      };
+    }
+    catch(err) {
+      console.log("Cannot get document from backend!");
+    }
+  }
+);
 
 const tabsSlice = createSlice({
   name: "PDF",
   initialState : {
+    coordinates: undefined,
     pdfBuffer: undefined,
+    fileName: undefined,
+    signers: undefined,
     pageCount: 0,
     pages: [],
     drawData : {
@@ -96,6 +126,22 @@ const tabsSlice = createSlice({
       state.signFinished = true;
       state.signDate = action.payload;
     }
+  },
+  extraReducers : {
+    [getPayload.fulfilled] : async (state, action) => {
+      console.log("++++++++++++ 1 :: ", action.payload);
+      const p = action.payload;
+      // state.coordinates = action.payload.coordinates;
+      // const doc = docPayload.documents[0];
+      // console.log("++++++++++++ 1");
+      // const pdfBuffer = b64toBytes(doc.documentBase64);
+      // state.fileName = doc.name;
+      // state.signers = docPayload?.recipients?.signers;
+      // const d = await PDFDocument.load(pdfBuffer);
+      // state.pageCount = d.getPageCount();
+      // state.pages = Array(state.pageCount).fill({});
+      state.pdfBuffer = p.pdfBuffer;
+    },
   }
 });
 
