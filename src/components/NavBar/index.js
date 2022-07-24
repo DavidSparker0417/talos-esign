@@ -14,6 +14,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../redux/auth';
+import WalletButton from '../WalletButton';
 
 export function Logo({ image, link }) {
   return (
@@ -95,14 +96,15 @@ const NavBar = ({logo, pages, components}) => {
               {c}
             </Box>))
           }
-          <IconButton
+          {/* <IconButton
             aria-haspopup="true"
             color="white"
             aria-controls="profile-menu"
             onClick={e=>setProfileMenu(e.currentTarget)}
           >
             <UserIcon/>
-          </IconButton>
+          </IconButton> */}
+          <WalletButton />
           <Menu
             id="profile-menu"
             open={Boolean(profileMenu)}

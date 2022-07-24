@@ -24,6 +24,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/l
 function ESTab({
   x,
   y,
+  title,
   color,
   drawn,
   image,
@@ -69,8 +70,10 @@ function ESTab({
             top: `${y - height / 2.5}px`,
             width: { width },
             height: { height },
+            justifyContent: "center",
+            fontSize: `${width/4}px`
           }}
-        />
+        >{title}</FreshingBanner>
       )}
     </>
   );
@@ -262,6 +265,7 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
                           <ESTab
                             x={tabs[i].initial.pos.x}
                             y={tabs[i].initial.pos.y}
+                            title="initial"
                             drawn={tabs[i].initial.drawn}
                             image={drawData?.initial.url}
                             width={drawData?.initial.width}
@@ -275,6 +279,7 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
                           <ESTab
                             x={tabs[i].sig.pos.x}
                             y={tabs[i].sig.pos.y}
+                            title="sign"
                             drawn={tabs[i].sig.drawn}
                             image={drawData?.sig.url}
                             width={drawData?.sig.width}

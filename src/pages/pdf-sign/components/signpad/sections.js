@@ -41,7 +41,7 @@ function NameBox({ label, value, setValue, ...rest }) {
         }}
         InputProps = {{
           style : {
-            fontSize: "2vw"
+            fontSize: "2vh"
           }
         }}
       />
@@ -103,7 +103,6 @@ export function ChooseStyle({ onStyleChange, ...rest }) {
 
   function handleChange(event, newType) {
     setEdityType(newType);
-    console.log("[DAVID] +++++++++++ changine type :: ", newType);
   }
 
   return (
@@ -165,7 +164,7 @@ const FingerDrawPanel = forwardRef(({ type, title, ...rest }, ref) => {
   }, [type, ref]);
 
   return (
-    <DSBox border="solid 2px" borderColor="border" height= "25vh">
+    <DSBox border="solid 2px" borderColor="border" height= "20vh">
       <Typography backgroundColor="yellow">{title}</Typography>
       <SignaturePad
         dotSize={2}
@@ -174,7 +173,7 @@ const FingerDrawPanel = forwardRef(({ type, title, ...rest }, ref) => {
         canvasProps={{
           style: {
             width: "100%",
-            height: "21vh",
+            height: "16vh",
           },
         }}
         ref={ref}
@@ -320,14 +319,14 @@ export const DrawPanel = forwardRef(({type, name, abrName, ...rest}, ref) => {
           Clear
         </Button>
       </Grid>
-      <Box maxHeight="60vh" overflow="hidden">
+      <Box maxHeight="50vh" overflow="hidden">
         <FingerDrawPanel title="Signature" type={type} ref={signRef} />
         <FingerDrawPanel title="Initial" type={type} ref={initialRef} />
         {type === 1 && (
           <ChangeFonts name={name} onChangeFont={setActiveFont} />
         )}
       </Box>
-      <Typography mt={1} fontSize={{ xs: "10px", sm: "16px" }} maxHeigh="10vh" overflow="hidden">
+      <Typography mt={1} fontSize={{ xs: "10px", sm: "16px" }} maxHeigh="20vh" overflow="hidden">
         By selecting Adopt and Sign, I agree that the signature and initals will
         be my electronic representation of my Signature and Initials for all
         purposes within these documents. When I, my agent, or my representative
