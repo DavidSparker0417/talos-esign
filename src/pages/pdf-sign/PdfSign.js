@@ -10,11 +10,13 @@ import testPayload from "./payload.json";
 // import coorinates from "./coordinates.json";
 import { b64toBytes, getCoordFromSigner, trimFileName } from "./helper";
 import SignPadV2 from "./components/signpad/signpad-hook";
-import { doSign, getPayload, pdfLoad, setDrawData } from "../../redux/tabs";
+import { doSign, getPayload, pdfLoad, setDrawData, setToken } from "../../redux/tabs";
 import TriggerPanel from "./section/trigger";
 import DSButton from "../../components/DSButton";
 import getFormattedDate from "../../helpers/datetime";
 import docsignService from "../../service/docsign.service";
+import { useNavigate } from "react-router-dom";
+import htmlToPdfmake from "html-to-pdfmake"
 
 export default function PdfSign() {
   const [pdf, setPdf] = useState();
@@ -22,7 +24,7 @@ export default function PdfSign() {
   const [togglePad, setTogglePad] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [signer, setSigner] = useState();
-  const [coordinates, setCoordinates] = useState();
+  const [coordinate, setCoordinate] = useState();
   const {
     pdfBuffer: resultPdfBuffer,
     pages,
@@ -31,21 +33,31 @@ export default function PdfSign() {
   } = useSelector((state) => state.tabs);
   const [toggleSign, setToggleSign] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
   useEffect(() => {
-    const { id } = queryString.parse(window.location.search);
+    const { token } = queryString.parse(window.location.search);
     // dispatch(getPayload());
-    docsignService.requestDoc().then(res => {
+    console.log("++++++++++ sending reqdoc +++++++++");
+    dispatch(setToken(token));
+    docsignService.requestDoc(token).then(res => {
       console.log(res);
-      setCoordinates(res.coordinates);
+      const id = res.id;
+      console.log("id = ", id);
       const payload = res.payload;
       const doc = payload.documents[0];
       const originalPdfBuffer = b64toBytes(doc.documentBase64);
-      const signers = payload?.recipients?.signers;
-      const s = signers.find((s) => s.recipientId === parseInt(id));
+      const s = payload?.recipients?.signers[id];
       setSigner(s);
+      setCoordinate(res.coordinates?.allSigners[id]);
       setPdf((old) => ({ ...old, filename: trimFileName(doc.name) }));
       setPdfBuffer(originalPdfBuffer);
+    })
+    .catch(err => {
+      if(err.message === "Unauthorized") {
+        navigate("/login");
+      }
+      console.log(err);
     });
   }, []);
 
@@ -64,8 +76,6 @@ export default function PdfSign() {
       dispatch(pdfLoad({ buffer: pdfBuffer, pageCount: doc.getPageCount() }));
     });
   }, [pdfBuffer]);
-
-  useEffect(() => {}, [currentPage]);
 
   function setup(settings) {
     console.log("+++++++++++ setup completed :: ", settings);
@@ -149,14 +159,18 @@ export default function PdfSign() {
     }
 
     const signedResult = await docsignService.sign(signer.email, "sign", JSON.stringify(drInfo));
-    console.log("+++++++++++ audit trail :: ", signedResult);
     let blob;
     let link;
-    blob = new Blob([JSON.stringify(signedResult.auditTrail)], {type: "application/json"});
-    link = document.createElement("a");
-    link.href = window.URL.createObjectURL(blob);
-    link.download = "audit-trail.json";
-    link.click();
+
+    console.log("+++++++++++ audit trail :: ", signedResult);
+    const json2html = require("json2html");
+    const auditTrailHtml = json2html.render(signedResult.auditTrail);
+    const html = htmlToPdfmake(auditTrailHtml);
+    console.log(html);
+    const pdfMake = require("pdfmake/build/pdfmake");
+    var pdfFonts = require("pdfmake/build/vfs_fonts");
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    pdfMake.createPdf({content:html}).download("audit-trail.pdf");
 
     const pdfBytes = await pdfDoc.save();
     // const bytes = new Uint8Array(pdfBytes);
@@ -173,9 +187,7 @@ export default function PdfSign() {
       <TriggerPanel onSetting={onSetting} />
       <PdfViewer
         pdf={pdf}
-        curPage={(page) => setCurrentPage(page)}
-        coordinates={coordinates}
-        signer={signer}
+        coordinate={coordinate}
       />
       <Modal 
         open={togglePad} 

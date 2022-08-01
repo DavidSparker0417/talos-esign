@@ -79,13 +79,12 @@ function ESTab({
   );
 }
 
-export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
+export default function PdfViewer({ pdf, coordinate }) {
   const pageContainerRef = useRef(null);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [scale, setScale] = useState([]);
   const classes = useStyles({ pageHeight: "900px" });
-  const [coord, setCoord] = useState();
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.tabs.pages);
   const drawData = useSelector((state) => state.tabs.drawData);
@@ -93,19 +92,6 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
   const [swiper, setSwiper] = useState();
   const [count, setCount] = useState(0);
   const [tabClickTimer, setTabClickTimer] = useState();
-
-  useEffect(() => {
-    if (!signer || !coordinates) return;
-    let cooSigner;
-    cooSigner = coordinates.allSigners?.owners.find(
-      (o) => o.email === signer.email
-    );
-    if (!cooSigner)
-      cooSigner = coordinates.allSigners?.tenants.find(
-        (o) => o.email === signer.email
-      );
-    setCoord(cooSigner);
-  }, [signer, coordinates]);
 
   function onDocumentLoadSuccess({ numPages }) {
     console.log(
@@ -119,15 +105,15 @@ export default function PdfViewer({ pdf, curPage, coordinates, signer }) {
     const scaleW = pageContainerRef.current.clientWidth / page.originalWidth;
     const scaleH = pageContainerRef.current.clientHeight / page.originalHeight;
 
-    const pOrgInitPos = coord.pages[pageIndex]?.initialCoordinates[0];
+    const pOrgInitPos = coordinate.pages[pageIndex]?.initialCoordinates[0];
     console.log("Initial pos = ", pOrgInitPos);
     const initialRPos = convertMMtoPixel(pOrgInitPos, scaleW, scaleH);
 
-    const pOrgSignPos = coord.pages[pageIndex]?.signatureCoordinates[0];
+    const pOrgSignPos = coordinate.pages[pageIndex]?.signatureCoordinates[0];
     console.log("Signature pos = ", pOrgSignPos);
     const sigPos = convertMMtoPixel(pOrgSignPos, scaleW, scaleH);
 
-    const pOrgDatePos = coord.pages[pageIndex]?.dateCoordinates[0];
+    const pOrgDatePos = coordinate.pages[pageIndex]?.dateCoordinates[0];
     console.log("Date pos = ", pOrgDatePos);
     const datePos = convertMMtoPixel(pOrgDatePos, scaleW, scaleH);
 

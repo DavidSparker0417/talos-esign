@@ -29,6 +29,11 @@ export default function WalletButton() {
       variant="contained"
       onClick={handleClick}
       color="warning"
+      sx = {{
+        padding: "4px",
+        fontSize: "12px",
+        marginLeft: "8px"
+      }}
     >
       {name}
     </Button>

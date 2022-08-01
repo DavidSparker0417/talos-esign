@@ -8,7 +8,20 @@ module.exports = function override(config) {
       "http": require.resolve("stream-http"),
       "https": require.resolve("https-browserify"),
       "os": require.resolve("os-browserify"),
-      "url": require.resolve("url")
+      "url": require.resolve("url"),
+      "chownr": require.resolve("chownr"),
+      "vm": require.resolve("vm-browserify"),
+      "path": require.resolve("path-browserify"),
+      "constants": require.resolve("constants-browserify"),
+      "zlib": require.resolve("browserify-zlib"),
+      "fs": false,
+      "tls": false,
+      "net": false,
+      "dns": false,
+      "child_process": false,
+      "readline": false,
+      "async_hooks": false,
+      "module": false
   })
   config.resolve.fallback = fallback;
   config.plugins = (config.plugins || []).concat([

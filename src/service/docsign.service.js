@@ -23,12 +23,12 @@ const signDoc = async (pdfBuffer, signData) => {
   }
 }
 
-const deliverDoc = async (payload, coordinates) => {
+const deliverDoc = async (payload) => {
   const url = API_URL + `deliver`;
   try {
     const res = await axios.post(
       url, 
-      {payload, coordinates},
+      {payload},
       { headers: authHeader() }
     );
     return res;
@@ -38,11 +38,40 @@ const deliverDoc = async (payload, coordinates) => {
   }
 }
 
-const requestDoc = async () => {
+const requestDoc = async (token) => {
   const url = API_URL + `payloads`;
   try {
     const res = await axios.post(
       url, 
+      {token}
+    );
+    return res.data;
+  } catch(e) {
+    const errMsg = getBackendErrMsg(e);
+    throw new Error(errMsg);
+  }
+}
+
+const auth = async (token, contact) => {
+  const url = API_URL + `auth`;
+  try {
+    const res = await axios.post(
+      url, 
+      {token, contact}
+    );
+    return res.data;
+  } catch(e) {
+    const errMsg = getBackendErrMsg(e);
+    throw new Error(errMsg);
+  }
+}
+
+const verify = async (token, code) => {
+  const url = API_URL + `verify`;
+  try {
+    const res = await axios.post(
+      url, 
+      {token, code}
     );
     return res.data;
   } catch(e) {
@@ -69,7 +98,9 @@ const docsignService = {
   signDoc,
   deliverDoc,
   requestDoc,
-  sign
+  sign,
+  auth,
+  verify,
 };
 
 export default docsignService;

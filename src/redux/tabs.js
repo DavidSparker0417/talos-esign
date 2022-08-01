@@ -31,6 +31,7 @@ export const getPayload = createAsyncThunk(
 const tabsSlice = createSlice({
   name: "PDF",
   initialState : {
+    token: undefined,
     coordinates: undefined,
     pdfBuffer: undefined,
     fileName: undefined,
@@ -60,6 +61,9 @@ const tabsSlice = createSlice({
     signDate: "",
   },
   reducers: {
+    setToken(state, action) {
+      state.token = action.payload;
+    },
     pdfLoad(state, action) {
       console.log("[REDUX] pdfLoad :: ", action.payload);
       const p = action.payload;
@@ -131,19 +135,10 @@ const tabsSlice = createSlice({
     [getPayload.fulfilled] : async (state, action) => {
       console.log("++++++++++++ 1 :: ", action.payload);
       const p = action.payload;
-      // state.coordinates = action.payload.coordinates;
-      // const doc = docPayload.documents[0];
-      // console.log("++++++++++++ 1");
-      // const pdfBuffer = b64toBytes(doc.documentBase64);
-      // state.fileName = doc.name;
-      // state.signers = docPayload?.recipients?.signers;
-      // const d = await PDFDocument.load(pdfBuffer);
-      // state.pageCount = d.getPageCount();
-      // state.pages = Array(state.pageCount).fill({});
       state.pdfBuffer = p.pdfBuffer;
     },
   }
 });
 
-export const {setTab, drawTab, setDrawData, pdfLoad, doSign} = tabsSlice.actions;
+export const {setToken, setTab, drawTab, setDrawData, pdfLoad, doSign} = tabsSlice.actions;
 export default tabsSlice.reducer;

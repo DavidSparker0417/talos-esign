@@ -5,6 +5,7 @@ import PrivateRoute, { PublicRoute } from "./routes/route";
 import PdfSign from "./pages/pdf-sign/PdfSign";
 import Test from "./pages/test";
 import { Box } from "@mui/material";
+import AuthPage from "./pages/authenticate";
 
 function App() {
   return (<Box display="flex" flexDirection="column" height="100%">
@@ -25,7 +26,7 @@ function App() {
         path="/login"
         element={
           <PublicRoute>
-            <Login />
+            <AuthPage />
           </PublicRoute>
         }
       />

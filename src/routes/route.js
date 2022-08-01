@@ -13,10 +13,11 @@ export default function PrivateRoute({children}) {
 }
 
 export function PublicRoute({children}) {
-  const isLogged = useSelector(isLoggedIn);
+  // const isLogged = useSelector(isLoggedIn);
 
-  if (!isLogged)
-    return children;
+  // if (!isLogged)
+  //   return children;
   
-  return <Navigate to="/" replace/>
+  // return <Navigate to="/" replace/>
+  return children;
 }
