@@ -15,7 +15,7 @@ export default function Main() {
     <>
       <NavBar
         components={[
-        <Typography variant="h4" fontSize={{xs:"24px", sm:"36px"}}>Smart Contracts</Typography>
+        <Typography variant="h4" fontSize={{xs:"16px", sm:"24px"}}>Smart Contracts</Typography>
       ]}
       />
       <Routes>

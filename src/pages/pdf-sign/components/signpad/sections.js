@@ -247,7 +247,7 @@ function ChangeFonts({ name, onChangeFont }) {
           textTransform: "none",
         }}
       >
-        Chang STYLE
+        Change STYLE
       </DSButton>
       <Menu
         id="basic-menu"

@@ -31,7 +31,10 @@ export default function WalletButton() {
       color="warning"
       sx = {{
         padding: "4px",
-        fontSize: "12px",
+        fontSize: {
+          xs: "10px",
+          sm:"12px"
+        },
         marginLeft: "8px"
       }}
     >

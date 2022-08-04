@@ -29,7 +29,8 @@ export default function PdfSign() {
     pdfBuffer: resultPdfBuffer,
     pages,
     editFinished, 
-    drawData
+    drawData,
+    token
   } = useSelector((state) => state.tabs);
   const [toggleSign, setToggleSign] = useState(false);
   const dispatch = useDispatch();
@@ -158,7 +159,7 @@ export default function PdfSign() {
       dispatch(doSign(signDate));
     }
 
-    const signedResult = await docsignService.sign(signer.email, "sign", JSON.stringify(drInfo));
+    const signedResult = await docsignService.sign(token, JSON.stringify(drInfo));
     let blob;
     let link;
 
@@ -166,14 +167,11 @@ export default function PdfSign() {
     const json2html = require("json2html");
     const auditTrailHtml = json2html.render(signedResult.auditTrail);
     const html = htmlToPdfmake(auditTrailHtml);
-    console.log(html);
     const pdfMake = require("pdfmake/build/pdfmake");
     var pdfFonts = require("pdfmake/build/vfs_fonts");
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
     pdfMake.createPdf({content:html}).download("audit-trail.pdf");
-
-    const pdfBytes = await pdfDoc.save();
-    // const bytes = new Uint8Array(pdfBytes);
+    
     const bytes = new Uint8Array(b64toBytes(signedResult.signedPdf));
     blob =  new Blob([bytes], {type: "application/pdf"});
     link = document.createElement("a");

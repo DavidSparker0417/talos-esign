@@ -38,7 +38,7 @@ const NavBar = ({logo, pages, components}) => {
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{paddingLeft:"0"}}>
         <Toolbar disableGutters sx={{justifyContent:"space-between"}}>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton

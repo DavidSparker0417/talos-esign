@@ -80,12 +80,12 @@ const verify = async (token, code) => {
   }
 }
 
-const sign = async(who, behavior, drInfo) => {
+const sign = async(token, drInfo) => {
   const url = API_URL + 'sign';
   try {
     const res = await axios.post(
       url, 
-      {who, behavior, drInfo}
+      {token, drInfo}
     );
     return res.data;
   } catch(e) {
