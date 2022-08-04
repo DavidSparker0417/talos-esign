@@ -170,7 +170,7 @@ export default function PdfSign() {
     const pdfMake = require("pdfmake/build/pdfmake");
     var pdfFonts = require("pdfmake/build/vfs_fonts");
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
-    pdfMake.createPdf({content:html}).download("audit-trail.pdf");
+    // pdfMake.createPdf({content:html}).download("audit-trail.pdf");
     
     const bytes = new Uint8Array(b64toBytes(signedResult.signedPdf));
     blob =  new Blob([bytes], {type: "application/pdf"});
