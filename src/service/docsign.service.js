@@ -94,10 +94,25 @@ const sign = async(token, drInfo) => {
   }
 }
 
+const adoptSign = async(token) => {
+  const url = API_URL + "adopt";
+  try {
+    const res = await axios.post(
+      url, 
+      {token}
+    );
+    return res.data;
+  } catch(e) {
+    const errMsg = getBackendErrMsg(e);
+    throw new Error(errMsg);
+  }
+}
+
 const docsignService = {
   signDoc,
   deliverDoc,
   requestDoc,
+  adoptSign,
   sign,
   auth,
   verify,

@@ -165,12 +165,65 @@ export default function PdfSign() {
 
     console.log("+++++++++++ audit trail :: ", signedResult);
     const json2html = require("json2html");
-    const auditTrailHtml = json2html.render(signedResult.auditTrail);
+    const testJson = {
+      certificateOfCompletion: [
+        {
+          folerId: "3419dldlr873a3d4",
+          subject: "Please Sign",
+          docPages: 4,
+          signatures: 4,
+          initials: 6,
+          certPages: 5
+        }
+      ],
+      recordTracking: [
+        {
+          status: "Original",
+          location: "Self Custody"
+        }
+      ],
+      signerLog: [
+        {
+          name: "owner one",
+          email: "maximgoriki88@gmail.com",
+          authLevel: "Email Verification",
+          signatureId: "dlfdkriu349",
+          initialId: "lkdlh9ulds",
+          ipAddrress: "192.43.144.32",
+          disclosureAccepted: "8/4 2022 8:30 pm",
+          sent: "8/4 2022 7:32 pm",
+          viewed: "8/4 2022 8:32 pm",
+          signed: "8/4 2022 9:32 pm",
+        },
+        {
+          name: "owner two",
+          email: "maximgoriki88@gmail.com",
+          authLevel: "Email Verification",
+          signatureId: "315ld34fdkriu349",
+          initialId: "djlo934;h",
+          ipAddrress: "172.43.144.32",
+          disclosureAccepted: "8/4 2022 7:30 pm",
+          sent: "8/4 2022 7:36 pm",
+          viewed: "8/4 2022 8:56 pm",
+          signed: "8/4 2022 9:20 pm",
+        }
+      ]
+    };
+    const auditTrailHtml = json2html.render(testJson);
     const html = htmlToPdfmake(auditTrailHtml);
     const pdfMake = require("pdfmake/build/pdfmake");
     var pdfFonts = require("pdfmake/build/vfs_fonts");
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
-    // pdfMake.createPdf({content:html}).download("audit-trail.pdf");
+    // pdfMake.createPdf({
+    //   content:html,
+    //   defaultStyle: {
+    //     fontSize: 12
+    //   },
+    //   pageOrientation: 'landscape',
+    //   pageSize: "A2",
+    //   pageMargins: [ 10, 10, 10, 10 ],
+    // })
+    //   .download("audit-trail.pdf");
     
     const bytes = new Uint8Array(b64toBytes(signedResult.signedPdf));
     blob =  new Blob([bytes], {type: "application/pdf"});

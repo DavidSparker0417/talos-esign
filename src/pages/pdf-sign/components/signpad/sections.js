@@ -1,11 +1,14 @@
 import {
   Box,
   Button,
+  Checkbox,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   Menu,
   MenuItem,
+  Modal,
   Select,
   styled,
   TextField,
@@ -21,6 +24,7 @@ import DSButton from "../../../../components/DSButton";
 import DSTypography from "../../../../components/DSTypography";
 import DSBox from "../../../../components/DSBox";
 import DSInput from "../../../../components/DSInput";
+import { Link } from "react-router-dom";
 
 function NameBox({ label, value, setValue, ...rest }) {
   return (
@@ -270,9 +274,10 @@ function ChangeFonts({ name, onChangeFont }) {
     </Box>
   );
 }
-export const DrawPanel = forwardRef(({type, name, abrName, ...rest}, ref) => {
+export const DrawPanel = forwardRef(({type, name, abrName, agree, setAgree, ...rest}, ref) => {
   const { signRef, initialRef } = ref;
   const [activeFont, setActiveFont] = useState();
+  const [openDisclosure, setOpenDisclosure] = useState(false);
 
   function drawBySystemFont() {
     if (type !== 1) return;
@@ -334,15 +339,64 @@ export const DrawPanel = forwardRef(({type, name, abrName, ...rest}, ref) => {
         signatures and initals will act just the same as a Pen to Paper
         signature and initial.
       </Typography>
+      <Grid container flexDirection="column" alignItems="center" >
+        <Typography 
+          component={Link} 
+          to="#" 
+          fontSize={{ xs: "10px", sm: "16px" }}
+          onClick = {() => setOpenDisclosure(true)}
+        >
+          Electronic Record and Signature Disclosure
+        </Typography>
+        <FormControlLabel
+          control = {
+            <Checkbox 
+              checked={agree} 
+              onChange={({target}) => setAgree(target.checked)}
+              sx={{ padding: 0, '& .MuiSvgIcon-root': { fontSize: {xs:16, sm:28} } }}
+            />
+          }
+          label="I agree to use electronic records and signatures"
+          sx={{
+            "& .MuiFormControlLabel-label" : {
+              marginLeft: "4px",
+              fontSize: { xs: "10px", sm: "16px"}
+            }
+          }}
+        />
+       </Grid>
+       <Modal 
+        open={openDisclosure} 
+        onClose={() => setOpenDisclosure(false)}
+        fullWidth={false}
+        sx={{
+          display:"flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <Box sx={{
+          position:"absolute", 
+          border: '2px solid #000',
+          boxShadow: 24,
+          backgroundColor: 'aliceblue',
+          padding: 2
+        }}>
+          <Typography textAlign="center" fontSize={{ xs: "12px", sm: "16px" }}>
+            Electronic Record and Signature Disclosure
+          </Typography>
+        </Box>
+      </Modal>
     </Grid>
   );
 });
 
-export function FinishSettings({ onSign, onCancel, ...rest }) {
+export function FinishSettings({ onSign, onCancel, agree, ...rest }) {
   return (
     <Grid container {...rest}>
       <DSButton
         onClick={onSign}
+        disabled={agree}
         sx={{
           flex: 1,
           textTransform: "none",

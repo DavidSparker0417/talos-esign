@@ -13,6 +13,8 @@ import SignaturePad from "react-signature-pad-wrapper";
 import { useUI } from "../../../../context/ui";
 import SignerNamePanel, { ChooseStyle, DrawPanel, FinishSettings } from "./sections";
 import getFormattedDate from "../../../../helpers/datetime";
+import docsignService from "../../../../service/docsign.service";
+import { useSelector } from "react-redux";
 
 function getAbbrName(name) {
   if (!name) return "";
@@ -33,6 +35,8 @@ export default function SignPadV2({ signer, close, setup, ...rest }) {
   const { setLoading } = useUI();
   const [name, setName] = useState(signer?.name);
   const [abrName, setAbrName] = useState(getAbbrName(signer?.name));
+  const [agree, setAgree] = useState(false);
+  const {token} = useSelector(state => state.tabs);
 
   function closeBtn() {
     if (close) close();
@@ -69,88 +73,6 @@ export default function SignPadV2({ signer, close, setup, ...rest }) {
     )
   }
 
-  // async function onSign() {
-  //   const pdfDoc = await PDFDocument.load(pdfBuffer);
-  //   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  //   const pages = pdfDoc.getPages();
-  //   const curPageNum = page - 1;
-  //   const curPage = pages[0];
-  //   let drawInfo = {
-  //     type: type === 0 ? "draw" : "text",
-  //     x: parseInt(signer.tabs.signHereTabs[0].anchorXOffset),
-  //     y: parseInt(signer.tabs.signHereTabs[0].anchorYOffset),
-  //     width: 0,
-  //     height: 0,
-  //     data: 0,
-  //   };
-
-  //   if (type === 1) {
-  //     // text
-  //     drawInfo.type = "text";
-  //     drawInfo.data = signText;
-  //     curPage.drawText(signText, {
-  //       x: drawInfo.x,
-  //       y: drawInfo.y,
-  //       size: 50,
-  //       font: helveticaFont,
-  //       color: rgb(0.95, 0.1, 0.1),
-  //     });
-  //   } else {
-  //     const drawnSigUrl = signRef.current.signaturePad.toDataURL();
-  //     const pngImageBytes = await fetch(drawnSigUrl).then((res) =>
-  //       res.arrayBuffer()
-  //     );
-  //     const pngImage = await pdfDoc.embedPng(pngImageBytes);
-  //     const pngDims = pngImage.scale(0.2);
-  //     drawInfo.type = "draw";
-  //     drawInfo.imgWidth = pngDims.width;
-  //     drawInfo.imgHeight = pngDims.height;
-  //     drawInfo.x = parseInt(signer.tabs.signHereTabs[0].anchorXOffset);
-  //     // drawInfo.y = curPage.getHeight() - drawInfo.imgHeight - parseInt(signer.tabs.signHereTabs[0].anchorYOffset);
-  //     drawInfo.y = parseInt(signer.tabs.signHereTabs[0].anchorYOffset);
-  //     const pngImageB64 = await fetch(drawnSigUrl).then((res) => {
-  //       return res.url.split("base64,")[1];
-  //     });
-  //     drawInfo.data = pngImageB64;
-  //     curPage.drawImage(pngImage, {
-  //       x: drawInfo.x,
-  //       y: drawInfo.y,
-  //       width: drawInfo.imgWidth,
-  //       height: drawInfo.imgHeight,
-  //     });
-  //   }
-
-  //   let pdfBytes = await pdfDoc.save();
-
-  //   let signedResp;
-  //   try {
-  //     setLoading(true, "Signing ...");
-  //     signedResp = await DocsignService.signDoc(
-  //       arrayBufferToBase64(pdfBuffer),
-  //       {
-  //         page: curPageNum,
-  //         ...drawInfo,
-  //       }
-  //     );
-  //   } catch (e) {
-  //     toast.error(e.message);
-  //     setLoading(false);
-  //   }
-
-  //   setLoading(false);
-
-  //   if (update) update(pdfBytes);
-
-  //   const signedBuffer = b64toBytes(signedResp.data);
-  //   var bytes = new Uint8Array(signedBuffer);
-  //   var blob = new Blob([bytes], { type: "application/pdf" }); // change resultByte to bytes
-  //   var link = document.createElement("a");
-  //   link.href = window.URL.createObjectURL(blob);
-  //   link.download = "signed.pdf";
-  //   link.click();
-  //   closeBtn();
-  // }
-
   async function onSign() {
     console.log("+++++++++++++++++  :: ", initialRef.current);
     const sigImageUrl = signRef.current.getTrimmedCanvas().toDataURL();
@@ -159,14 +81,16 @@ export default function SignPadV2({ signer, close, setup, ...rest }) {
     );
 
     const initialImageUrl = initialRef.current.getTrimmedCanvas().toDataURL();
-    const initialImageBytes = await fetch(initialImageUrl).then((res) =>
-      res.arrayBuffer()
-    );
-    setup({
-      sig: sigImageUrl,
-      initial: initialImageUrl,
-      date: getFormattedDate(new Date())
-    });
+    try {
+      await docsignService.adoptSign(token);
+      setup({
+        sig: sigImageUrl,
+        initial: initialImageUrl,
+        date: getFormattedDate(new Date())
+      });
+    } catch (e) {
+      toast.error(e.message);
+    }
     closeBtn();
   }
 
@@ -198,6 +122,8 @@ export default function SignPadV2({ signer, close, setup, ...rest }) {
         name={name}
         abrName={abrName}
         maxHeight="75vh"
+        agree = {agree}
+        setAgree = {setAgree}
         ref={{
           signRef,
           initialRef
@@ -206,6 +132,7 @@ export default function SignPadV2({ signer, close, setup, ...rest }) {
       <FinishSettings 
         onSign={onSign} 
         onCancel={closeBtn} 
+        agree={!agree}
         maxHeight={{
           xs: "5vh" ,
           sm: "60px"
