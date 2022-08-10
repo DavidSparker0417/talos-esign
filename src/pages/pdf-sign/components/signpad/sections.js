@@ -172,8 +172,8 @@ const FingerDrawPanel = forwardRef(({ type, title, ...rest }, ref) => {
       <Typography backgroundColor="yellow">{title}</Typography>
       <SignaturePad
         dotSize={2}
-        minWidth={2}
-        maxWidth={5}
+        minWidth={1}
+        maxWidth={2}
         canvasProps={{
           style: {
             width: "100%",
@@ -405,10 +405,11 @@ export function FinishSettings({ onSign, onCancel, agree, ...rest }) {
         ADOPT and SIGN
       </DSButton>
       <DSButton
-        variant="gradient"
+        variant="contained"
         sx={{
           flex: 1,
           color: "#c84c09",
+          background: "white",
           textTransform: "none",
         }}
         onClick={onCancel}
