@@ -6,8 +6,14 @@ import PdfSign from "./pages/pdf-sign/PdfSign";
 import Test from "./pages/test";
 import { Box } from "@mui/material";
 import AuthPage from "./pages/authenticate";
+import { useEffect } from "react";
+import { browserName, CustomView } from 'react-device-detect';
 
 function App() {
+  useEffect(() => {
+    console.log("++++++++++ sending reqdoc +++++++++", browserName);
+    alert(`Detected browser : ${browserName}`);
+  }, []);
   return (<Box display="flex" flexDirection="column" height="100%">
     <Routes>
       <Route

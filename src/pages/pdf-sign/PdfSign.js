@@ -17,7 +17,6 @@ import getFormattedDate from "../../helpers/datetime";
 import docsignService from "../../service/docsign.service";
 import { useNavigate } from "react-router-dom";
 import htmlToPdfmake from "html-to-pdfmake"
-import { browserName, CustomView } from 'react-device-detect';
 
 export default function PdfSign() {
   const [pdf, setPdf] = useState();
@@ -40,7 +39,6 @@ export default function PdfSign() {
   useEffect(() => {
     const { token } = queryString.parse(window.location.search);
     // dispatch(getPayload());
-    console.log("++++++++++ sending reqdoc +++++++++", browserName);
     dispatch(setToken(token));
     docsignService.requestDoc(token).then(res => {
       console.log(res);
