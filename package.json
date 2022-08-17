@@ -51,6 +51,7 @@
     "react-signature-pad": "^0.0.6",
     "react-signature-pad-wrapper": "^3.2.0",
     "react-toastify": "^9.0.4",
+    "react-use-pwa-install": "^0.2.1",
     "signature_pad": "^4.0.5",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",

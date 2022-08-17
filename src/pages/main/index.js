@@ -21,7 +21,7 @@ export default function Main() {
       <Routes>
         <Route exact path="doc-sign" element={<PdfSign />} />
         <Route exact path="test" element={<Test />} />
-        <Route exact path="/" element={<Navigate to="doc-sign?id=4" />} />
+        <Route exact path="/" element={<Navigate to="doc-sign" />} />
       </Routes>
     </>
   );

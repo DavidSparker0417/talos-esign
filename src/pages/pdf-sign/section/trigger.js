@@ -1,8 +1,10 @@
 import {useSelector} from "react-redux";
-import { Box, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import DSButton from "../../../components/DSButton";
 import { PDFDocument } from "pdf-lib";
 import docsignService from "../../../service/docsign.service";
+import InstallPWA from "../components/InstallPwa";
+import {usePWAInstall} from "react-use-pwa-install";
 
 export default function TriggerPanel({onSetting}) {
   const {
@@ -11,6 +13,7 @@ export default function TriggerPanel({onSetting}) {
     pages, 
     drawData, 
     editFinished} = useSelector(state => state.tabs);
+  const install = usePWAInstall();
   
   async function onSign() {
     const pdfDoc = await PDFDocument.load(pdfBuffer);
@@ -66,6 +69,12 @@ export default function TriggerPanel({onSetting}) {
       <DSButton onClick={onSetting}>
         Settings
       </DSButton>
+      {/* <InstallPWA /> */}
+      {install && 
+        <Button variant="contained" color="warning" onClick={install}>
+          Install PWA
+        </Button>
+      }
     </Grid>
   );
 }

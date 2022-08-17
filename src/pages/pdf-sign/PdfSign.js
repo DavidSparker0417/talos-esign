@@ -17,6 +17,7 @@ import getFormattedDate from "../../helpers/datetime";
 import docsignService from "../../service/docsign.service";
 import { useNavigate } from "react-router-dom";
 import htmlToPdfmake from "html-to-pdfmake"
+import InstallPWA from "./components/InstallPwa";
 
 export default function PdfSign() {
   const [pdf, setPdf] = useState();
