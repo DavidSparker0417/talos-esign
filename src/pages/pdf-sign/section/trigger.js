@@ -3,7 +3,7 @@ import { Box, Button, Grid } from "@mui/material";
 import DSButton from "../../../components/DSButton";
 import { PDFDocument } from "pdf-lib";
 import docsignService from "../../../service/docsign.service";
-import InstallPWA from "../components/InstallPwa";
+// import InstallPWA from "../components/InstallPwa";
 import {usePWAInstall} from "react-use-pwa-install";
 
 export default function TriggerPanel({onSetting}) {
